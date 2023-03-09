@@ -1,0 +1,37 @@
+/* pages/chat/chat.wxss */
+page{
+    height: 100%;
+}
+.container{
+    height: 75%;
+    display: flex;
+    justify-content: center;
+    background-color: black;
+}
+
+.content {
+    margin-top: 600rpx;
+}
+
+.user-container{
+    display: block;
+    padding: 30rpx;
+  }
+
+  .input-container {
+      display: flex;
+      border: 5rpx solid #face82;
+      margin-bottom: 50rpx;
+      border-radius: 10rpx;
+  }
+
+  .input {
+    height: 68rpx;
+    padding: 0 5rpx;
+    width: 100%;
+  }
+
+  .button-container {
+    width: 60%;
+    margin:0 auto;
+  }
