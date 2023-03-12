@@ -7,7 +7,9 @@ Page({
     data: {
         data: {
             userInfo:'',
-            text: "这只是一个良好的开始"
+            text: "这只是一个良好的开始",
+            mode: 'scaleToFill',
+            src: '../../images/v2_rr1x4o.jpg'
         }
     },
     /**
@@ -64,7 +66,10 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-
+        this.setData({
+            mode: 'aspectFit',
+            src: '../../images/v2_rr1x4o.jpg'
+        })
     },
 
     /**

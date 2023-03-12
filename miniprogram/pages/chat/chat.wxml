@@ -1,8 +1,9 @@
 <!--pages/chat/chat.wxml-->
 <view class="container">
-    <view class="content">
+    <view class="ai-container">
         <!-- 此处放置页面主要内容 -->
-        <text class="ai-content" style="color: aliceblue">{{text}} </text>
+        <text class="ai-content" style="color: rgb(0, 128, 240)">{{text}} </text>
+        <image class="ai-image" style="background-color: #000000;" mode="{{mode}}" src="{{src}}"></image>
     </view>
 </view>
 <view class="user-container">
