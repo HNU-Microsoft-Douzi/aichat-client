@@ -67,7 +67,7 @@ Page({
      */
     onLoad() {
         this.setData({
-            mode: 'aspectFit',
+            mode: 'widthFix',
             src: '../../images/v2_rr1x4o.jpg'
         })
     },

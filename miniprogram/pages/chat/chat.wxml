@@ -1,16 +1,15 @@
 <!--pages/chat/chat.wxml-->
-<view class="container">
-    <view class="ai-container">
-        <!-- 此处放置页面主要内容 -->
-        <text class="ai-content" style="color: rgb(0, 128, 240)">{{text}} </text>
-        <image class="ai-image" style="background-color: #000000;" mode="{{mode}}" src="{{src}}"></image>
-    </view>
+<view class="above-container">
+    <!-- 此处放置页面主要内容 -->
+    <text class="ai-content">{{text}}</text>
+    <image class="ai-image" style="background-color: #000000;" mode="{{mode}}" src="{{src}}"></image>
 </view>
-<view class="user-container">
-    <view class="input-container">
-        <input bindinput="userContentInput" class="input" placeholder="请输入内容"/>
-    </view>
-    <view class="button-container">
-        <button bindtap="userClick" type="primary" form-type="submit">按住说话</button>
+<view class="bottom-container">
+    <text class="input" >我是艾伦</text>
+    <view class="voice-container">
+        <button class="chat-button" type="mini">
+        <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(250%);"/>
+    </button>
+    <text style="text-align: center; display: flex; justify-content: center; margin-top: 5rpx; font-size: 26rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
     </view>
 </view>
