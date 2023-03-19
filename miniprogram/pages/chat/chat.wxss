@@ -67,6 +67,34 @@ page {
     display: flex;
 }
 
-.voice-container {
-    
+.input-container {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    background-color: #f1eded;
+    flex-direction: row;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin-bottom: -10rpx;
+    padding-top: 30rpx;
+    padding-bottom: 70rpx;
+}
+
+.voice-button {
+    width: 90rpx !important;
+    height: 90rpx;
+    opacity: 0;
+    background-image: url(../../images/v2_rr1xqf.png);
+    margin-left: 20rpx;
+    background-size: cover;
+}
+
+.user-input {
+    height: 90rpx;
+    width: 75%;
+    margin-left: 20rpx;
+    margin-right: 50rpx;
+    background-color: #ffffff;
+    border-radius: 8rpx;
 }

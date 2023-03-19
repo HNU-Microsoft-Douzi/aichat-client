@@ -6,10 +6,14 @@
 </view>
 <view class="bottom-container">
     <text class="input" >我是艾伦</text>
-    <view class="voice-container">
-        <button class="chat-button" type="mini">
+    <view class="voice-container" hidden="{{inputState==true}}">
+        <button class="chat-button" type="mini" bindtap="clickVoiceButton">
         <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(250%);"/>
     </button>
     <text style="text-align: center; display: flex; justify-content: center; margin-top: 5rpx; font-size: 26rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
+    </view>
+    <view class="input-container" hidden="{{inputState == false}}">
+        <button class="voice-button" bindtap="clickVoiceButton"/>
+        <input class="user-input"/>
     </view>
 </view>

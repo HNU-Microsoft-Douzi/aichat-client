@@ -1,6 +1,5 @@
 // pages/chat/chat.ts
 Page({
-
     /**
      * 页面的初始数据
      */
@@ -9,16 +8,20 @@ Page({
             userInfo:'',
             text: "这只是一个良好的开始",
             mode: 'scaleToFill',
-            src: '../../images/v2_rr1x4o.jpg'
+            src: '../../images/v2_rr1x4o.jpg',
+            inputState: true
         }
     },
+
     /**
      * 点击事件
      */
-    userClick: function() {
+    clickVoiceButton: function() {
         // 获取输入框的内容
+        this.setData({inputState: !this.data.data.inputState})
         console.log("用户点击操作")
-        if (this.data.userInfo.length == 0) {
+        // 切换到输入框模式
+        if (this.data.data.userInfo.length == 0) {
             console.log("用户输入为空，无法进行发送")
         } else {
             const page=this
@@ -26,7 +29,7 @@ Page({
             wx.request({
                 url: 'https://154.38.240.226:5000/chat', //仅为示例，并非真实的接口地址
                 data: {
-                    text: this.data.userInfo
+                    text: this.data.data.userInfo
                 },
                 header: {
                   'content-type': 'application/json' // 默认值
