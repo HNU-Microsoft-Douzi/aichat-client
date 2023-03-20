@@ -55,6 +55,13 @@ Page({
     },
 
     /**
+     * 长按事件
+     */
+    pressLongVoiceButton: function() {
+        console.debug("pressLongVoiceButton")
+    },
+
+    /**
      * 用户的文本输入
      */
     userContentInput: function(e: { detail: { value: any } }) {

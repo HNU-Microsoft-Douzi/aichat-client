@@ -71,22 +71,22 @@ page {
     display: flex;
     align-items: center;
     position: absolute;
-    background-color: #f1eded;
+    background-color: #f1eded86;
     flex-direction: row;
     left: 0;
     right: 0;
     bottom: 0;
     margin-bottom: -10rpx;
     padding-top: 30rpx;
-    padding-bottom: 70rpx;
+    padding-bottom: 160rpx;
+    padding-left: 1%;
 }
 
 .voice-button {
-    width: 90rpx !important;
-    height: 90rpx;
-    opacity: 0;
-    background-image: url(../../images/v2_rr1xqf.png);
+    padding: 0;
+    background-color: transparent;
     margin-left: 20rpx;
+    border: none;
     background-size: cover;
 }
 

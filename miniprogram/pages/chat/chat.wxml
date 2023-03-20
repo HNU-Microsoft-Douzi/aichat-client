@@ -7,13 +7,15 @@
 <view class="bottom-container">
     <text class="input" >我是艾伦</text>
     <view class="voice-container" wx:if="{{inputState}}">
-        <button class="chat-button" type="mini" bindtap="clickVoiceButton">
+        <button class="chat-button" type="mini" bindtap="clickVoiceButton" bindlongpress='pressLongVoiceButton' >
         <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(250%);"/>
     </button>
     <text style="text-align: center; display: flex; justify-content: center; margin-top: 5rpx; font-size: 26rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
     </view>
     <view class="input-container" hidden="{{inputState}}">
-        <button class="voice-button" bindtap="clickVoiceButton"/>
+        <view class="voice-button" bindtap="clickVoiceButton">
+            <image src="../../images/v2_rr1xqf.png" style="width: 62rpx; height: 62rpx;"/>
+        </view>
         <input class="user-input"/>
     </view>
 </view>
