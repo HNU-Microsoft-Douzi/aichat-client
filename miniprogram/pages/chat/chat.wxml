@@ -1,21 +1,26 @@
 <!--pages/chat/chat.wxml-->
 <view class="above-container">
     <!-- 此处放置页面主要内容 -->
-    <text class="ai-content">{{text}}</text>
+    <text class="ai-content" wx:if="{{aiTextViewState}}">{{text}}</text>
     <image class="ai-image" style="background-color: #000000;" mode="{{mode}}" src="{{src}}"></image>
 </view>
 <view class="bottom-container">
-    <text class="input" >我是艾伦</text>
+    <text class="input" wx:if="{{userTextViewState}}">{{userConfirmText}}</text>
     <view class="voice-container" wx:if="{{inputState}}">
-        <button class="chat-button" type="mini" bindtap="clickVoiceButton" bindlongpress='pressLongVoiceButton' >
-        <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(250%);"/>
-    </button>
-    <text style="text-align: center; display: flex; justify-content: center; margin-top: 5rpx; font-size: 26rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
+        <button :style="rippleStyle" class="chat-button" type="mini" bindtap="clickCircleVoiceButton" 
+        bindlongpress='pressLongVoiceButton' hover-class="chat-button-hover-class" 
+        bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved" >
+            <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(150%);"/>
+        </button>
+    <text style="text-align: center; display: flex; justify-content: center; margin-top: 12rpx; font-size: 30rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
     </view>
-    <view class="input-container" hidden="{{inputState}}">
+    <view class="input-container" hidden="{{inputState}}" style="bottom:{{textContainerBottom}}px; padding-bottom:{{textContainerPaddingBotton}}rpx; background-color:{{textContainerBgColor}}">
         <view class="voice-button" bindtap="clickVoiceButton">
             <image src="../../images/v2_rr1xqf.png" style="width: 62rpx; height: 62rpx;"/>
         </view>
-        <input class="user-input"/>
+        <input class="user-input" confirm-type="send" 
+        bindconfirm="userConfirmMessage" value='{{inputValue}}' 
+        bindinput="inputChange" adjust-position='{{false}}' 
+        bindfocus="foucus" bindblur="blur"/>
     </view>
 </view>

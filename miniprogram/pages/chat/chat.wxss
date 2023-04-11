@@ -20,7 +20,7 @@ page {
 .ai-content {
     left: 7%;
     right: 7%;
-    height: 28%;
+    height: auto;
     background-color: white;
     position: absolute;
     z-index: 1;
@@ -32,6 +32,8 @@ page {
     padding-bottom: 10rpx;
     padding-left: 20rpx;
     padding-right: 20rpx;
+    min-height: 20%;
+    max-height: 40%;
 }
 
 .ai-image {
@@ -57,12 +59,12 @@ page {
 }
 
 .chat-button {
-    width:120rpx !important;
-    height: 120rpx;
+    width:160rpx !important;
+    height: 160rpx;
     background-color: rgba(36, 119, 249, 1);
     border-radius: 360rpx;
     z-index: 20;
-    margin-top: 40%;
+    margin-top: 22%;
     align-items: center;
     display: flex;
 }
@@ -78,7 +80,7 @@ page {
     bottom: 0;
     margin-bottom: -10rpx;
     padding-top: 30rpx;
-    padding-bottom: 160rpx;
+    padding-bottom: 150rpx;
     padding-left: 1%;
 }
 
@@ -97,4 +99,11 @@ page {
     margin-right: 50rpx;
     background-color: #ffffff;
     border-radius: 8rpx;
+    margin-bottom: 20rpx;
+}
+
+.chat-button-hover-class{
+    opacity: 0.9;
+    background: rgb(0, 84, 219);
+    transform: scale(0.92, 0.92);
 }

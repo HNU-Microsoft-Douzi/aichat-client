@@ -4114,7 +4114,7 @@ innerAudioContext.onError((res) => {
         files: string[]
         errMsg: string
     }
-    interface RecorderManagerStartOption {
+interface RecorderManagerStartOption {
         /** 指定录音的音频输入源，可通过 [wx.getAvailableAudioSources()](https://developers.weixin.qq.com/miniprogram/dev/api/media/audio/wx.getAvailableAudioSources.html) 获取当前可用的音频源
          *
          * 可选值：
