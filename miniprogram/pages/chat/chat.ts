@@ -115,13 +115,17 @@ Page({
             name: 'file',
             timeout: 30000,
             success(res) {
-                console.log("sendUserVoiceToService success: ", res.data)
                 wx.hideLoading()
                 const data = JSON.parse(res.data);
+                console.debug("sendUserVoiceToService file", data.file)
+                console.debug("sendUserVoiceToService origin", data.origin)
                 page.setData({
-                    text: data.result,
+                    text: data.origin,
                     aiTextViewState: true
                 });
+                const fileUrl = `https://www.learnaitutorenglish.club/tts?filename=${data.file}`
+                console.debug(`sendUserVoiceToService fileUrl ${fileUrl}`)
+                // TODO, 这里调用wx的音频播放器直接对wav进行播放就可以了
             },
             fail(err) {
                 console.error(err);
