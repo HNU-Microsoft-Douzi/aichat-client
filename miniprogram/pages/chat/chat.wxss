@@ -39,7 +39,6 @@ page {
 
 .ai-image {
     width: 100%;
-    transform: translateY(-1%);
 }
 
 .input {
