@@ -21,30 +21,56 @@ Page({
         textContainerBottom: 0,
         textContainerPaddingBotton: 150,
         textContainerBgColor: "#f1eded86",
-        rippleStyle: ''
+        rippleStyle: '',
+        innerAudioContext: wx.createInnerAudioContext()
     },
 
     clickCircleVoiceButton: function () {
         this.setData({
-             inputState: !this.data.inputState,
-             userTextViewState: !this.data.userTextViewState
-            })
+            inputState: !this.data.inputState,
+            userTextViewState: !this.data.userTextViewState
+        })
     },
 
     clickVoiceButton: function () {
         // 获取输入框的内容
         console.log("clickVoiceButton")
-        this.setData({ 
+        this.setData({
             inputState: !this.data.inputState,
             userTextViewState: !this.data.userTextViewState
         }
         )
-    },
-
-    inputChange: function (e) {
-        this.setData({
-            inputValue: e.detail.value
-        })
+        if (this.data.inputState == false) {
+            const page = this
+            // 这个时候先让ai进行提问，后面这一部分的内容抽离到组件中去
+            wx.request({
+                url: 'https://www.learnaitutorenglish.club/chat', //仅为示例，并非真实的接口地址
+                data: {
+                    text: "Now let's start practicing, you could ask me a question first"
+                },
+                timeout: 30000,
+                header: {
+                    'content-type': 'application/json' // 默认值
+                },
+                success(res) {
+                    wx.hideLoading()
+                    const { result } = res.data
+                    console.log(`clickVoiceButton result: ${result}`)
+                    page.setData({
+                        text: result,
+                        aiTextViewState: true
+                    })
+                },
+                fail(res) {
+                    console.error(res.errMsg)
+                    page.setData({
+                        text: "抱歉，你的网络好像不太好",
+                        aiTextViewState: true
+                    })
+                    wx.hideLoading()
+                }
+            })
+        }
     },
 
     userConfirmMessage: function (event: { detail: { value: any } }) {
@@ -91,8 +117,6 @@ Page({
                 wx.hideLoading()
             }
         })
-        // 开始将后台的返回内容展示到文本框中
-        // 清空用户输入框的内容 
     },
 
     /**
@@ -126,6 +150,19 @@ Page({
                 const fileUrl = `https://www.learnaitutorenglish.club/tts?filename=${data.file}`
                 console.debug(`sendUserVoiceToService fileUrl ${fileUrl}`)
                 // TODO, 这里调用wx的音频播放器直接对wav进行播放就可以了
+                const innerAudioContext = wx.createInnerAudioContext()
+                innerAudioContext.src = fileUrl
+                innerAudioContext.onPlay(() => {
+                    console.log("开始播放")
+                })
+                innerAudioContext.onError((res) => {
+                    console.log("播放异常:" + res.errMsg)
+                    console.log("播放异常:" + res.errCode)
+                })
+                innerAudioContext.onEnded((listener) => {
+                    console.log("播放完成")
+                })
+                innerAudioContext.play()
             },
             fail(err) {
                 console.error(err);
@@ -156,7 +193,7 @@ Page({
         this.data.rippleStyle = 'top:' + y + 'px;left:' + x + 'px;animation: ripple 0.5s linear;'
         setTimeout(() => {
             this.setData({
-                rippleStyle : ''
+                rippleStyle: ''
             })
         }, 500);
         //touchmove时触发
@@ -191,6 +228,8 @@ Page({
         this.getAuthSetting();
         //初始化音频管理器
         this.initRecorderManager();
+        // 初始化播放管理器
+        this.initPlayManager();
     },
 
     //获取权限设置
@@ -245,6 +284,22 @@ Page({
         recorderManager.onError(() => { });
     },
 
+    // 初始化播放管理期
+    initPlayManager() {
+        console.log("initPlayManager")
+        const innerAudioContext = this.data.innerAudioContext;
+        innerAudioContext.onPlay(() => {
+            console.log("开始播放")
+        })
+        innerAudioContext.onError((res) => {
+            console.log("播放异常:" + res.errMsg)
+            console.log("播放异常:" + res.errCode)
+        })
+        innerAudioContext.onEnded((listener) => {
+            console.log("播放完成")
+        })
+    },
+
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
@@ -270,7 +325,8 @@ Page({
      * 生命周期函数--监听页面卸载
      */
     onUnload() {
-        this.destoryInnerAudioContext();//销毁当前音频上下文实例
+        const innerAudioContext = this.data.innerAudioContext
+        innerAudioContext.destroy();
     },
 
     /**
@@ -347,11 +403,6 @@ Page({
             showCancel: false
         });
     },
-    //销毁当前组件音频实例
-    destoryInnerAudioContext() {
-        wx.createInnerAudioContext().destroy();
-        console.log("音频实例销毁啦");
-    },
 
     //输入聚焦
     foucus: function (e) {
@@ -365,7 +416,7 @@ Page({
     },
 
     //失去聚焦
-    blur: function(e) {
+    blur: function (e) {
         var that = this;
         that.setData({
             textContainerBottom: 0,

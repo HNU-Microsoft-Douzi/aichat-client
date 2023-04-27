@@ -23,17 +23,18 @@ page {
     height: auto;
     background-color: white;
     position: absolute;
+    bottom: 0;
     z-index: 1;
     opacity: 75%;
-    margin-top: 80%;
     border-radius: 20rpx;
-    border-bottom: black;
     padding-top: 10rpx;
     padding-bottom: 10rpx;
     padding-left: 20rpx;
     padding-right: 20rpx;
     min-height: 20%;
-    max-height: 40%;
+    max-height: 48%;
+    overflow-y: auto;
+    overflow-x: scroll;
 }
 
 .ai-image {
