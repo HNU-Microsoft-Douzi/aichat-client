@@ -1,5 +1,9 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "siri-wave": "/components/sariWave",
+    "recordComponent": "/components/recordComponent"
+  },
+  
   "disableScroll": true,
   "navigationStyle": "custom"
 }
