@@ -240,9 +240,10 @@ SiriWave.prototype._startDrawCycle = function() {
   // if (requestAnimationFrame) {
   // requestAnimationFrame(this._startDrawCycle.bind(this));
   // } else {
-    if (this.timer) clearTimeout(this.timer);
-    this.timer = setTimeout(this._startDrawCycle.bind(this), 20);
-  // }
+      // TODO 这里会数量暴增
+    // if (this.timer) clearTimeout(this.timer);
+    // this.timer = setTimeout(this._startDrawCycle.bind(this), 20);
+//   }
 };
 
 /* API */

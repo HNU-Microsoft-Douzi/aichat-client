@@ -1,0 +1,5 @@
+<!--components/curveWaveAnim.wxml-->
+<view class="curve-wave" style="width: auto; height: max-content;" >
+    <canvas id="c1" type="2d" style="width: 100%; height: 180px"></canvas>
+    <text style="margin-bottom: 10rpx; margin-top: -30px;">{{text}}</text>
+</view>

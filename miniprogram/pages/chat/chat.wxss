@@ -59,11 +59,11 @@ page {
 }
 
 .chat-button {
-    width: 160rpx !important;
-    height: 160rpx;
-    background-color: rgba(36, 119, 249, 1);
+    width: 200rpx !important;
+    height: 200rpx;
+    background: linear-gradient(135deg, rgb(0,159,255) 0%, rgb(236,47,75) 100%);
     border-radius: 360rpx;
-    z-index: 20;
+    z-index: 21;
     margin-top: 22%;
     align-items: center;
     display: flex;
@@ -103,17 +103,10 @@ page {
 }
 
 .chat-button-hover-class {
-    opacity: 0.9;
-    background: rgb(0, 84, 219);
-    transform: scale(0.92, 0.92);
-}
-
-.siriwave {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 20;
+    opacity: 0.6;
+    background: rgb(0, 0, 0);
+    transform: scale(0.8, 0.8);
+    transition: transform 0.5s ease-in-out;
 }
 
 .fullscreen {

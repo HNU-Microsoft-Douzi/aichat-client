@@ -7,10 +7,12 @@
 <view class="bottom-container">
     <text class="input" wx:if="{{showUserTextView}}">{{userConfirmText}}</text>
     <view class="voice-container" wx:if="{{inputMode}}">
-        <button :style="rippleStyle" class="chat-button" type="mini" bindtap="clickCircleVoiceButton" bindlongpress='pressLongVoiceButton' hover-class="chat-button-hover-class" bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved">
-            <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(150%);" />
+        <button :style="rippleStyle" class="chat-button" type="mini" bindtap="clickCircleVoiceButton" bindlongpress='pressLongVoiceButton' longpress-duration="300" hover-class="chat-button-hover-class" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved">
+            <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(100%);" />
         </button>
-        <text style="text-align: center; display: flex; justify-content: center; margin-top: 12rpx; font-size: 30rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
+        <view hidden="{{hideLongPressText}}">
+            <text style="text-align: center; display: flex; justify-content: center; margin-top: 12rpx; font-size: 30rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
+        </view>
     </view>
     <view class="input-container" hidden="{{inputMode}}" style="bottom:{{textContainerBottom}}px; padding-bottom:{{textContainerPaddingBotton}}rpx; background-color:{{textContainerBgColor}}">
         <view class="voice-button" bindtap="clickVoiceButton">
@@ -22,5 +24,5 @@
 <view class="fullscreen" hidden="{{hideVoiceCurveLine}}">
 </view>
 <view style="position:relative;" hidden="{{hideVoiceCurveLine}}">
-    <siri-wave class="siriwave"></siri-wave>
+    <curve-wave id="curve-wave-view" hidden="{{hideVoiceCurveLine}}"></curve-wave>
 </view>

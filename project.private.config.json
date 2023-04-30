@@ -3,7 +3,8 @@
     "projectname": "aichat-client",
     "setting": {
         "compileHotReLoad": true,
-        "urlCheck": true,
+        "urlCheck": false,
         "autoAudits": true
-    }
+    },
+    "libVersion": "2.31.0"
 }

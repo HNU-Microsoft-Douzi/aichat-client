@@ -1,19 +1,16 @@
-const recordManage = require("../../components/recordComponent")
+const recordModule = require("recordManage")
+const request = require("request")
 // pages/chat/chat.ts
 Page({
     /**
      * 页面的初始数据
      */
     data: {
-        inputMode: false,
+        inputMode: true,
         showAiTextView: false,
-        showUserTextView: true,
+        showUserTextView: false,
         aiInitText: "",
-        recordManager: wx.getRecorderManager(),
-        recordManagerOptions: {
-            recoderAuthStatus: false //录音授权状态
-        },
-        sendLock: false, // 是否允许发送消息
+        voiceRecorder: null,
         startPoint: { clientX: 0, clientY: 0 },
         userConfirmText: "",
         inputValue: "",
@@ -21,9 +18,13 @@ Page({
         textContainerPaddingBotton: 150,
         textContainerBgColor: "#f1eded86",
         rippleStyle: '',
-        innerAudioContext: wx.createInnerAudioContext(),
         hideVoiceCurveLine: true,
-        siriwave: null
+        hideLongPressText: false,
+        longPressButtonParams: {
+            centerX: 0,
+            centerY: 0,
+            radius: 0
+        }
     },
 
     clickCircleVoiceButton: function () {
@@ -75,163 +76,53 @@ Page({
     },
 
     userConfirmMessage: function (event: { detail: { value: any } }) {
-        this.sendUserTextToService(event.detail.value)
-        this.setData({
-            userConfirmText: event.detail.value,
-            inputValue: ''
-        })
-    },
-
-    sendUserTextToService(msg: String) {
-        const page = this
-        console.log("sendUserTextToService: " + msg)
-        wx.showLoading({
-            title: "让我思考一下...",
-            mask: true
-        })
-        this.setData({
-            showAiTextView: false
-        })
-        // 开始向后台发送post请求
-        wx.request({
-            url: 'https://www.learnaitutorenglish.club/chat', //仅为示例，并非真实的接口地址
-            data: {
-                text: msg
+        const that = this
+        request.sendUserTextToService(event.detail.value, ({
+            onStart() {
+                that.setData({
+                    showAiTextView: false,
+                    userConfirmText: event.detail.value,
+                    inputValue: ''
+                })
             },
-            timeout: 30000,
-            header: {
-                'content-type': 'application/json' // 默认值
-            },
-            success(res) {
-                wx.hideLoading()
-                const { result } = res.data
-                console.log(`sendUserTextToService response: ${result}`)
-                page.setData({
-                    aiInitText: result,
+            onSuccess(text: string) {
+                that.setData({
+                    aiInitText: text,
                     showAiTextView: true
                 })
             },
-            fail(res) {
-                console.error(res.errMsg)
-                page.setData({
+            onFail() {
+                that.setData({
                     aiInitText: "抱歉，你的网络好像不太好",
                     showAiTextView: true
                 })
-                wx.hideLoading()
             }
-        })
-    },
-
-    /**
-     * 将用户的语音传递给服务端
-     * @param path 录音文件的本地路径
-     */
-    sendUserVoiceToService(path: string) {
-        console.log("sendUserVoiceToService: path - ", path)
-        const page = this
-        this.setData({
-            showAiTextView: false
-        })
-        wx.showLoading({
-            title: "让我思考一下...",
-            mask: true
-        })
-        wx.uploadFile({
-            url: 'https://www.learnaitutorenglish.club/voice',
-            filePath: path,
-            name: 'file',
-            timeout: 30000,
-            success(res) {
-                wx.hideLoading()
-                const data = JSON.parse(res.data);
-                console.debug("sendUserVoiceToService file", data.file)
-                console.debug("sendUserVoiceToService origin", data.origin)
-                page.setData({
-                    aiInitText: data.origin,
-                    showAiTextView: true
-                });
-                const fileUrl = `https://www.learnaitutorenglish.club/tts?filename=${data.file}`
-                console.debug(`sendUserVoiceToService fileUrl ${fileUrl}`)
-                // TODO, 这里调用wx的音频播放器直接对wav进行播放就可以了
-                const innerAudioContext = wx.createInnerAudioContext()
-                innerAudioContext.src = fileUrl
-                innerAudioContext.onPlay(() => {
-                    console.log("开始播放")
-                })
-                innerAudioContext.onError((res) => {
-                    console.log("播放异常:" + res.errMsg)
-                    console.log("播放异常:" + res.errCode)
-                })
-                innerAudioContext.onEnded((listener) => {
-                    console.log("播放完成")
-                })
-                innerAudioContext.play()
-            },
-            fail(err) {
-                console.error(err);
-                page.setData({
-                    aiInitText: "抱歉，你的网络好像不太好",
-                    showAiTextView: true
-                })
-                wx.hideLoading()
-            }
-        });
+        }))
     },
 
     /**
      * 长按事件
      */
     pressLongVoiceButton: function (e: { touches: { clientX: number, clientY: number }[] }) {
-        console.debug("pressLongVoiceButton" + e.touches[0].clientY)
+        console.info("pressLongVoiceButton" + e.touches[0].clientY)
         this.data.startPoint = e.touches[0]; // 记录长按时开始点信息，后面用于计算上划取消时手指滑动的距离。
-        this.startRecord()
-    },
-
-    //开始录音
-    startRecord: function () {
-        this.data.sendLock = false; // 允许发送消息
-        let that = this;
-        if (this.data.recordManagerOptions.recoderAuthStatus) {
-            this.recordLogic();
-        } else {
-            wx.openSetting({
-                success(res) {
-                    if (res.authSetting["scope.record"]) {
-                        that.data.recordManagerOptions.recoderAuthStatus = true;
-                        that.recordLogic();
-                    }
-                }
-            });
+        const vR: VoiceRecordManage = this.data.voiceRecorder;
+        if (vR) {
+            vR.startRecord();
         }
     },
 
-    //调用recorderManager.start开始录音
-    recordLogic() {
-        console.log("recordLogic")
-        // wx.showToast({
-        //     title: "正在录音，松开发送，上划取消",
-        //     icon: "none",
-        //     duration: 60000
-        // });
-        this.data.sendLock = false; // 允许发送消息
+    onTouchStart() {
+        console.info("onTouchStart")
         this.setData({
-            hideVoiceCurveLine: false
+            hideLongPressText: true
         })
-        // TODO, 这里的编码采样率的大小可能影响到整个录音文件的大小
-        this.data.recordManager.start({
-            duration: 10000,
-            sampleRate: 44100,
-            numberOfChannels: 1,
-            encodeBitRate: 192000,
-            format: 'aac',
-            frameSize: 0.01
-        });
-        // this.data.recordManagerOptions.recodeStatus = 1;
     },
 
     onTouchMoved: function (e: { touches: { clientX: number, clientY: number }[] }) {  // TODO, weszhang, 这里不知道为什么暂时没用
         var x = e.touches[0].clientX;
         var y = e.touches[0].clientY;
+
         this.data.rippleStyle = 'top:' + y + 'px;left:' + x + 'px;animation: ripple 0.5s linear;'
         setTimeout(() => {
             this.setData({
@@ -239,25 +130,34 @@ Page({
             })
         }, 500);
         //touchmove时触发
-        var moveLenght = e.touches[e.touches.length - 1].clientY - this.data.startPoint.clientY; //移动距离
-        if (Math.abs(moveLenght) > 50) {
-            // wx.showToast({
-            //     title: "松开手指,取消发送",
-            //     icon: "none",
-            //     duration: 60000
-            // });
-            this.data.sendLock = true; // 不允许发送消息
-        } else {
-            this.data.sendLock = false; // 允许发送消息
+        const page = this;
+        const vr: VoiceRecordManage = this.data.voiceRecorder;
+        const distance = Math.sqrt(Math.pow(x - this.data.longPressButtonParams.centerX, 2) + Math.pow(y - this.data.longPressButtonParams.centerY, 2));
+        if (vr) {
+            if (distance <= this.data.longPressButtonParams.radius) {
+                // 触控点在圆形按钮范围内
+                const child = page.selectComponent('#curve-wave-view');
+                child.changeText("松开发送")
+                vr.startSendMsg()
+            } else {
+                // 触控点不在圆形按钮范围内
+                const child = page.selectComponent('#curve-wave-view');
+                child.changeText("松开取消发送")
+                vr.stopSendMsg()
+            }
         }
     },
 
     onTouchEnd: function () {
         console.log('onTouchEnd, stop recordManager')
         // wx.hideToast()
-        this.data.recordManager.stop()
+        const vr: VoiceRecordManage = this.data.voiceRecorder
+        if (vr) {
+            vr.stopRecord()
+        }
         this.setData({
-            hideVoiceCurveLine: true
+            hideVoiceCurveLine: true,
+            hideLongPressText: false
         })
     },
 
@@ -265,101 +165,66 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-        //判断是否已授权录音权限
-        this.getAuthSetting();
-        //初始化音频管理器
-        this.initRecorderManager();
-        // 初始化播放管理器
-        this.initPlayManager();
+        console.log("onLoad")
+        const page = this
+        const vR = new recordModule.VoiceRecordManage(({
+            onError(errorMsg: string) {
+                console.error(errorMsg)
+                // 关闭录音动画
+                page.setData({
+                    hideVoiceCurveLine: true
+                })
+                const child = page.selectComponent('#curve-wave-view');
+                child.pause()
+            },
+            onStart() {
+                page.setData({
+                    hideVoiceCurveLine: false
+                })
+                // 展示录音动画
+                const child = page.selectComponent('#curve-wave-view');
+                child.play()
+                console.log(child)
+            },
+            onEnd() {
+                page.setData({
+                    hideVoiceCurveLine: true
+                })
+                // 关闭录音动画
+                const child = page.selectComponent('#curve-wave-view');
+                child.pause()
+            }
+        }), ({
+            onError(errorMsg: string) {
+                page.setData({
+                    aiInitText: "抱歉，你的网络好像不太好",
+                    showAiTextView: true
+                })
+            },
+            onSuccess(origin: string) {
+                page.setData({
+                    aiInitText: origin,
+                    showAiTextView: true
+                });
+            }
+        }))
+        this.data.voiceRecorder = vR;
+        vR.authJudge()
+
+        const query = wx.createSelectorQuery();
+        query.select('.chat-button').boundingClientRect((rect) => {
+            console.log(`rect: `)
+            console.log(rect)
+            this.data.longPressButtonParams.centerX = rect.left + rect.width / 2;
+            this.data.longPressButtonParams.centerY = rect.top + rect.height / 2;
+            this.data.longPressButtonParams.radius = rect.width / 2
+        }).exec();
     },
 
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
     onReady() {
-        const siriwave = this.selectComponent('.siriwave') as any;
-        console.log("onLoad: siriwave")
-        console.log(siriwave)
-        this.data.siriwave = siriwave;
-        siriwave.start();
-    },
-
-    //获取权限设置
-    getAuthSetting: function () {
-        let that = this;
-        wx.getSetting({
-            success(res) {
-                if (!res.authSetting["scope.record"]) {
-                    wx.authorize({
-                        scope: "scope.record",
-                        success() {
-                            that.data.recordManagerOptions.recoderAuthStatus = true;
-                            console.log("getAuthSetting recorderAuth get success")
-                        },
-                        fail() {
-                            that.data.recordManagerOptions.recoderAuthStatus = false;
-                            console.log("getAuthSetting recorderAuth get fail")
-                        }
-                    });
-                } else {
-                    that.data.recordManagerOptions.recoderAuthStatus = true;
-                    console.log("getAuthSetting recorderAuth get success")
-                }
-            }
-        });
-    },
-
-    //初始化音频管理器
-    initRecorderManager() {
-        console.log("initRecorderManager")
-        const that = this;
-        const recorderManager = this.data.recordManager;
-        recorderManager.onFrameRecorded((res) => {
-            const {
-                frameBuffer
-            } = res
-            let uint8Array = new Uint8Array(frameBuffer)
-            that.setData({
-                voiceLine: new Array(...uint8Array)
-            })
-        })
-        recorderManager.onStart(() => {
-            console.log('recorder start')
-        })
-        recorderManager.onPause(() => {
-            console.log('recorder pause')
-        })
-        recorderManager.onStop((res) => {
-            if (this.data.sendLock) {
-                // TODO, weszhang, 这里应该会存储文件，后面需要将文件进行删除
-                console.log("recorder stop, but sendLock, drop the file")
-                return
-            }
-            console.log('recorder stop', res)
-            const { tempFilePath } = res
-            this.sendUserVoiceToService(tempFilePath)
-        })
-        recorderManager.onFrameRecorded((res) => {
-            const { frameBuffer } = res
-            console.log('frameBuffer.byteLength', frameBuffer.byteLength)
-        })
-        recorderManager.onError(() => { });
-    },
-
-    // 初始化播放管理期
-    initPlayManager() {
-        console.log("initPlayManager")
-        const innerAudioContext = this.data.innerAudioContext;
-        innerAudioContext.onPlay(() => {
-            console.log("开始播放")
-        })
-        innerAudioContext.onError((res) => {
-            console.log("播放异常:" + res.errMsg)
-            console.log("播放异常:" + res.errCode)
-        })
-        innerAudioContext.onEnded((listener) => {
-            console.log("播放完成")
-        })
     },
 
     /**
@@ -380,8 +245,7 @@ Page({
      * 生命周期函数--监听页面卸载
      */
     onUnload() {
-        const innerAudioContext = this.data.innerAudioContext
-        innerAudioContext.destroy();
+
     },
 
     /**

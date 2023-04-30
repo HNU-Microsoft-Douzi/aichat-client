@@ -1,7 +1,7 @@
 {
   "usingComponents": {
     "siri-wave": "/components/sariWave",
-    "recordComponent": "/components/recordComponent"
+    "curve-wave": "/components/curveWaveAnim"
   },
   
   "disableScroll": true,
