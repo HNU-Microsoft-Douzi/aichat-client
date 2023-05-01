@@ -29,6 +29,8 @@ Component({
             if (this.data._inited) {
                 return
             }
+
+            // 在这里处理文件保存成功后的逻辑
             const query = this.createSelectorQuery().in(this);
             query.select('#c1').fields({ node: true, size: true }).exec((res) => {
                 console.info("curveWave");
@@ -42,8 +44,9 @@ Component({
                 this.data.ani = lottie.loadAnimation({
                     loop: true,
                     autoplay: false,
-                    animationData: require('../json/curve-wave.js'),
-                    rendererSettings: {
+                    // animationData: require('../json/curve-wave.js'),
+                    path: 'https://www.learnaitutorenglish.club/lottie?filename=curve-wave.json',
+                     rendererSettings: {
                         context,
                     },
                 })

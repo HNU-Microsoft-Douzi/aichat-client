@@ -18,7 +18,7 @@ Page({
         textContainerPaddingBotton: 150,
         textContainerBgColor: "#f1eded86",
         rippleStyle: '',
-        hideVoiceCurveLine: true,
+        hideVoiceCurveLine: false,
         hideLongPressText: false,
         longPressButtonParams: {
             centerX: 0,

@@ -63,7 +63,6 @@ page {
     height: 200rpx;
     background: linear-gradient(135deg, rgb(0,159,255) 0%, rgb(236,47,75) 100%);
     border-radius: 360rpx;
-    z-index: 21;
     margin-top: 22%;
     align-items: center;
     display: flex;
