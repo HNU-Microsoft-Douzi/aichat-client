@@ -1,6 +1,5 @@
 {
   "usingComponents": {
-    "siri-wave": "/components/sariWave",
     "curve-wave": "/components/curveWaveAnim"
   },
   

@@ -1,6 +1,7 @@
 const recordModule = require("recordManage")
 const request = require("request")
 // pages/chat/chat.ts
+
 Page({
     /**
      * 页面的初始数据
@@ -9,7 +10,8 @@ Page({
         inputMode: true,
         showAiTextView: false,
         showUserTextView: false,
-        aiInitText: "",
+        aiTextArray: [""],
+        aiInitText: [{}],
         voiceRecorder: null,
         startPoint: { clientX: 0, clientY: 0 },
         userConfirmText: "",
@@ -18,13 +20,13 @@ Page({
         textContainerPaddingBotton: 150,
         textContainerBgColor: "#f1eded86",
         rippleStyle: '',
-        hideVoiceCurveLine: false,
+        hideVoiceCurveLine: true,
         hideLongPressText: false,
         longPressButtonParams: {
             centerX: 0,
             centerY: 0,
             radius: 0
-        }
+        },
     },
 
     clickCircleVoiceButton: function () {
@@ -59,14 +61,14 @@ Page({
                     const { result } = res.data
                     console.log(`clickVoiceButton result: ${result}`)
                     page.setData({
-                        aiInitText: result,
+                        aiInitText: page.generateAiText(-1, [result]),
                         showAiTextView: true
                     })
                 },
                 fail(res) {
                     console.error(res.errMsg)
                     page.setData({
-                        aiInitText: "抱歉，你的网络好像不太好",
+                        aiInitText: page.generateAiText(-1, ["抱歉，你的网络好像不太好"]),
                         showAiTextView: true
                     })
                     // wx.hideLoading()
@@ -87,13 +89,13 @@ Page({
             },
             onSuccess(text: string) {
                 that.setData({
-                    aiInitText: text,
+                    aiInitText: that.generateAiText(-1, [text]),
                     showAiTextView: true
                 })
             },
             onFail() {
                 that.setData({
-                    aiInitText: "抱歉，你的网络好像不太好",
+                    aiInitText: that.generateAiText(-1, ["抱歉，你的网络好像不太好"]),
                     showAiTextView: true
                 })
             }
@@ -197,15 +199,24 @@ Page({
         }), ({
             onError(errorMsg: string) {
                 page.setData({
-                    aiInitText: "抱歉，你的网络好像不太好",
+                    aiInitText: page.generateAiText(-1, ["抱歉，你的网络好像不太好"]),
                     showAiTextView: true
                 })
             },
-            onSuccess(origin: string) {
+            onGetWholeTextArray(textArray: Array<string>) {
+                console.info("textArray:")
+                console.info(textArray)
                 page.setData({
-                    aiInitText: origin,
+                    aiTextArray: textArray,
+                    aiInitText: page.generateAiText(-1, textArray),
                     showAiTextView: true
                 });
+            },
+            onTraverseIndex(index: number) {
+                console.info("onTraverseIndex: " + index)
+                page.setData({
+                    aiInitText: page.generateAiText(index, page.data.aiTextArray)
+                })
             }
         }))
         this.data.voiceRecorder = vR;
@@ -304,10 +315,35 @@ Page({
             textContainerPaddingBotton: 150,
             textContainerBgColor: "#f1eded86"
         })
-        if (that.data.aiInitText != '') {
+        if (that.data.aiInitText) {
             that.setData({
                 showAiTextView: true
             })
         }
+    },
+    generateAiText(index: number, textArray: Array<String>): Array<object> {
+        const richText = [];
+        for (var i = 0; i < textArray.length; i++) {
+            if (textArray[i] == "") {
+                continue
+            }
+            if (i === index) {
+                richText.push({
+                    name: 'span',
+                    attrs: {
+                        style: 'font-weight: bold; color: #1E90FF;'
+                    },
+                    children: [
+                        {
+                            type: 'text',
+                            text: textArray[index]
+                        }
+                    ]
+                })
+            } else {
+                richText.push({ type: 'text', text: textArray[i] })
+            }
+        }
+        return richText;
     }
 })

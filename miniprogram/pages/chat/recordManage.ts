@@ -3,8 +3,7 @@ class VoiceRecordManage {
     private recoderAuthStatus: boolean //录音授权状态
     private banSendMsg: boolean // 禁止发送消息
     private listener: VoiceRecordManageCallback
-    private innerAudioContext: WechatMiniprogram.InnerAudioContext
-    constructor(callback: VoiceRecordManageCallback, ttsCallback : TtsDownloadManageCallback) {
+    constructor(callback: VoiceRecordManageCallback, ttsCallback: TtsDownloadManageCallback) {
         console.log("VoiceRecordManage init")
         this.recordManager = wx.getRecorderManager();
         this.recoderAuthStatus = false
@@ -18,7 +17,7 @@ class VoiceRecordManage {
         this.recordManager.onPause(() => {
             console.log('record pause')
         })
-        this.recordManager.onStop((res: {tempFilePath: string}) => {
+        this.recordManager.onStop((res: { tempFilePath: string }) => {
             if (this.banSendMsg) {
                 // TODO, weszhang, 这里应该会存储文件，后面需要将文件进行删除
                 console.log("banSendMsg = true")
@@ -35,8 +34,7 @@ class VoiceRecordManage {
         // })
         this.recordManager.onError((callback) => {
             this.listener.onError(callback.errMsg)
-         });
-         this.innerAudioContext = wx.createInnerAudioContext()
+        });
     }
 
     //开始录音
@@ -96,7 +94,6 @@ class VoiceRecordManage {
     }
 
     public destroy() {
-        this.innerAudioContext.destroy()
         this.recordManager
     }
 
@@ -129,55 +126,72 @@ class VoiceRecordManage {
     * 将用户的语音传递给服务端
     * @param path 录音文件的本地路径
     */
-   private sendUserVoiceToService(path: string, ttsCallback: TtsDownloadManageCallback) {
-       console.log("sendUserVoiceToService: path - ", path)
-       
-       wx.showLoading({
-           title: "让我思考一下...",
-           mask: true
-       })
-       const that = this
-       wx.uploadFile({
-           url: 'https://www.learnaitutorenglish.club/voice',
-           filePath: path,
-           name: 'file',
-           timeout: 30000,
-           success(res) {
-               wx.hideLoading()
-               const data = JSON.parse(res.data);
-               console.debug("sendUserVoiceToService file", data.file)
-               console.debug("sendUserVoiceToService origin", data.origin)
-               ttsCallback.onSuccess(data.origin)
-               const fileUrl = `https://www.learnaitutorenglish.club/tts?filename=${data.file}`
-               console.debug(`sendUserVoiceToService fileUrl ${fileUrl}`)
-               // TODO, 这里调用wx的音频播放器直接对wav进行播放就可以了
-               that.innerAudioContext.src = fileUrl
-               that.innerAudioContext.onPlay(() => {
-                   console.log("开始播放")
-               })
-               that.innerAudioContext.onError((res) => {
-                   console.log("播放异常:" + res.errMsg)
-                   console.log("播放异常:" + res.errCode)
-               })
-               that.innerAudioContext.onEnded((listener) => {
-                   console.log("播放完成")
-               })
-               that.innerAudioContext.play()
-           },
-           fail(err) {
-               console.error(err);
-               ttsCallback.onError(err.errMsg)
-               wx.hideLoading()
-           }
-       });
-   }
+    private sendUserVoiceToService(path: string, ttsCallback: TtsDownloadManageCallback) {
+        console.log("sendUserVoiceToService: path - ", path)
+        const that = this;
+        wx.showLoading({
+            title: "让我思考一下...",
+            mask: true
+        })
+        wx.uploadFile({
+            url: 'https://www.learnaitutorenglish.club/voice',
+            filePath: path,
+            name: 'file',
+            timeout: 30000,
+            success(res) {
+                wx.hideLoading()
+                const { result } = JSON.parse(res.data);
+                console.log(`result:`)
+                console.log(result)
+                const textArray: Array<string> = []
+                result.forEach((item: { file: string, origin: string }) => {
+                    const fileUrl = item.file
+                    const responseText = item.origin + '\n'
+                    textArray.push(responseText);
+                    console.log(`fileUrl: ${fileUrl}  responseText: ${responseText}`)
+                });
+                ttsCallback.onGetWholeTextArray(textArray)
+                that.playNext(0, result, ttsCallback);
+            },
+            fail(err) {
+                console.error(err);
+                ttsCallback.onError(err.errMsg)
+                wx.hideLoading()
+            }
+        });
+    }
+
+    private playNext(currentIndex: number, array: Array<{file: string, origin: string}>, ttsCallback: TtsDownloadManageCallback) {
+        if (currentIndex + 1 > array.length) {
+            console.log("playNext over bound")
+            return
+        }
+        const audio = wx.createInnerAudioContext();
+        const fileUrl = `https://www.learnaitutorenglish.club/tts?filename=${array[currentIndex].file}`
+        console.log(`playNext fileUrl: ${fileUrl}`)
+        audio.src = fileUrl
+        audio.onPlay(() => {
+            console.log("开始播放")
+        })
+        audio.onError((res) => {
+            console.log("播放异常:" + res.errMsg)
+            console.log("播放异常:" + res.errCode)
+        })
+        audio.onEnded((listener) => {
+            console.log("播放完成")
+            audio.destroy(); // 销毁当前音频
+            this.playNext(currentIndex + 1, array, ttsCallback);
+        });
+        ttsCallback.onTraverseIndex(currentIndex)
+        audio.play();
+    }
 }
 
 interface VoiceRecordManageCallback {
     onError(
         errorMsg: string
     ): void
-    onStart() : void
+    onStart(): void
     onEnd(): void
 }
 
@@ -185,7 +199,8 @@ interface TtsDownloadManageCallback {
     onError(
         errorMsg: string
     ): void
-    onSuccess(origin: string) : void
+    onGetWholeTextArray(textArray: Array<string>): void
+    onTraverseIndex(index: number): void
 }
 
 module.exports.VoiceRecordManage = VoiceRecordManage

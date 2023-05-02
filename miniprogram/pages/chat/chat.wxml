@@ -1,7 +1,7 @@
 <!--pages/chat/chat.wxml-->
 <view class="above-container">
     <!-- 此处放置页面主要内容 -->
-    <text class="ai-content" wx:if="{{showAiTextView}}" selectable="true">{{aiInitText}}</text>
+    <rich-text nodes="{{aiInitText}}" class="ai-content" wx:if="{{showAiTextView}}" selectable="true"></rich-text>
     <image class="ai-image" style="background-color: #000000;" mode="widthFix" src="../../images/girl.png"></image>
 </view>
 <view class="bottom-container">
