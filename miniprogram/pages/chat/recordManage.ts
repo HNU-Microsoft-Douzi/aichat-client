@@ -129,17 +129,13 @@ class VoiceRecordManage {
     private sendUserVoiceToService(path: string, ttsCallback: TtsDownloadManageCallback) {
         console.log("sendUserVoiceToService: path - ", path)
         const that = this;
-        wx.showLoading({
-            title: "让我思考一下...",
-            mask: true
-        })
+        ttsCallback.onStartDownload();
         wx.uploadFile({
             url: 'https://www.learnaitutorenglish.club/voice',
             filePath: path,
             name: 'file',
             timeout: 30000,
             success(res) {
-                wx.hideLoading()
                 const { result } = JSON.parse(res.data);
                 console.log(`result:`)
                 console.log(result)
@@ -156,7 +152,6 @@ class VoiceRecordManage {
             fail(err) {
                 console.error(err);
                 ttsCallback.onError(err.errMsg)
-                wx.hideLoading()
             }
         });
     }
@@ -199,6 +194,7 @@ interface TtsDownloadManageCallback {
     onError(
         errorMsg: string
     ): void
+    onStartDownload(): void
     onGetWholeTextArray(textArray: Array<string>): void
     onTraverseIndex(index: number): void
 }

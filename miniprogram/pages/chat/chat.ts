@@ -2,6 +2,9 @@ const recordModule = require("recordManage")
 const request = require("request")
 // pages/chat/chat.ts
 
+const textContainerPaddingBottomSize = 20
+const textContainerPaddingBottomUpWithKeyboard = 5
+
 Page({
     /**
      * 页面的初始数据
@@ -17,11 +20,11 @@ Page({
         userConfirmText: "",
         inputValue: "",
         textContainerBottom: 0,
-        textContainerPaddingBotton: 150,
-        textContainerBgColor: "#f1eded86",
+        textContainerPaddingBotton: textContainerPaddingBottomSize,
         rippleStyle: '',
         hideVoiceCurveLine: true,
         hideLongPressText: false,
+        hideLoaddingDialog: true,
         longPressButtonParams: {
             centerX: 0,
             centerY: 0,
@@ -84,13 +87,15 @@ Page({
                 that.setData({
                     showAiTextView: false,
                     userConfirmText: event.detail.value,
+                    hideLoaddingDialog: false,
                     inputValue: ''
                 })
             },
             onSuccess(text: string) {
                 that.setData({
                     aiInitText: that.generateAiText(-1, [text]),
-                    showAiTextView: true
+                    showAiTextView: true,
+                    hideLoaddingDialog: true
                 })
             },
             onFail() {
@@ -124,17 +129,16 @@ Page({
     onTouchMoved: function (e: { touches: { clientX: number, clientY: number }[] }) {  // TODO, weszhang, 这里不知道为什么暂时没用
         var x = e.touches[0].clientX;
         var y = e.touches[0].clientY;
-
+        console.info(`x: ${x}, y: ${y}`)
         this.data.rippleStyle = 'top:' + y + 'px;left:' + x + 'px;animation: ripple 0.5s linear;'
-        setTimeout(() => {
-            this.setData({
-                rippleStyle: ''
-            })
-        }, 500);
+        this.setData({
+            rippleStyle: ''
+        })
         //touchmove时触发
         const page = this;
         const vr: VoiceRecordManage = this.data.voiceRecorder;
         const distance = Math.sqrt(Math.pow(x - this.data.longPressButtonParams.centerX, 2) + Math.pow(y - this.data.longPressButtonParams.centerY, 2));
+        console.info(`distance: ${distance}`)
         if (vr) {
             if (distance <= this.data.longPressButtonParams.radius) {
                 // 触控点在圆形按钮范围内
@@ -203,13 +207,19 @@ Page({
                     showAiTextView: true
                 })
             },
+            onStartDownload() {
+                page.setData({
+                    hideLoaddingDialog: false
+                })
+            },
             onGetWholeTextArray(textArray: Array<string>) {
                 console.info("textArray:")
                 console.info(textArray)
                 page.setData({
                     aiTextArray: textArray,
                     aiInitText: page.generateAiText(-1, textArray),
-                    showAiTextView: true
+                    showAiTextView: true,
+                    hideLoaddingDialog: true
                 });
             },
             onTraverseIndex(index: number) {
@@ -221,21 +231,29 @@ Page({
         }))
         this.data.voiceRecorder = vR;
         vR.authJudge()
-
-        const query = wx.createSelectorQuery();
-        query.select('.chat-button').boundingClientRect((rect) => {
-            console.log(`rect: `)
-            console.log(rect)
-            this.data.longPressButtonParams.centerX = rect.left + rect.width / 2;
-            this.data.longPressButtonParams.centerY = rect.top + rect.height / 2;
-            this.data.longPressButtonParams.radius = rect.width / 2
-        }).exec();
     },
 
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
     onReady() {
+        // TODO, weszhang, 这里获取到的rect的左上
+        const page = this;
+        // 注意，这里必须要做一个延时，不然button的参数获取是相对于bottom-container呢，似乎300ms可以确保按钮组件渲染到正确的位置
+        setTimeout(()=>{
+            const subQuery = wx.createSelectorQuery()
+            subQuery.select('.chat-button').boundingClientRect()
+            subQuery.selectViewport().scrollOffset() 
+            subQuery.exec(function (rect) {
+                console.info(`按钮top: ${rect[0].top}`)
+                const voiceButtonTop = rect[0].top
+                console.log(rect)
+                page.data.longPressButtonParams.centerX = rect[0].left + rect[0].width / 2;
+                page.data.longPressButtonParams.centerY = voiceButtonTop + rect[0].height / 2;
+                page.data.longPressButtonParams.radius = rect[0].width / 2
+                console.info(`底部长按按钮参数: centerX ${page.data.longPressButtonParams.centerX} centerY ${page.data.longPressButtonParams.centerY} radius ${page.data.longPressButtonParams.radius}`)
+            })
+        }, 300)
     },
 
     /**
@@ -302,7 +320,7 @@ Page({
         that.setData({
             textContainerBottom: e.detail.height,
             showAiTextView: false,
-            textContainerPaddingBotton: 85,
+            textContainerPaddingBotton: textContainerPaddingBottomUpWithKeyboard,
             textContainerBgColor: "#ffefef86"
         })
     },
@@ -312,7 +330,7 @@ Page({
         var that = this;
         that.setData({
             textContainerBottom: 0,
-            textContainerPaddingBotton: 150,
+            textContainerPaddingBotton: textContainerPaddingBottomSize,
             textContainerBgColor: "#f1eded86"
         })
         if (that.data.aiInitText) {

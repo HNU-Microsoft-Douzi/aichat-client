@@ -1,4 +1,6 @@
 {
   "usingComponents": {
+    "loadding": "/components/robotLoadding",
+    "curve-wave": "/components/curveWaveAnim"    
   }
 }

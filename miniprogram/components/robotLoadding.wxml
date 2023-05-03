@@ -1,0 +1,5 @@
+<!--components/buttonwave.wxml-->
+<view style="background-color: rgba(0, 0, 0, 0.3); width: max-content; height: max-content; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+    <canvas id="loadding-canvas" type="2d" style="width: 238px; height: 196px;"></canvas>
+    <text style="color: white; transform: translateY(-50%);">正在思考...</text>
+</view>

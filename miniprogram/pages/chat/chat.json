@@ -1,6 +1,7 @@
 {
   "usingComponents": {
-    "curve-wave": "/components/curveWaveAnim"
+    "loadding": "/components/robotLoadding",
+    "curve-wave": "/components/curveWaveAnim"    
   },
   
   "disableScroll": true,
