@@ -3,12 +3,14 @@ class VoiceRecordManage {
     private recoderAuthStatus: boolean //录音授权状态
     private banSendMsg: boolean // 禁止发送消息
     private listener: VoiceRecordManageCallback
+    private innerAudioContextList: Array<WechatMiniprogram.InnerAudioContext>
     constructor(callback: VoiceRecordManageCallback, ttsCallback: TtsDownloadManageCallback) {
         console.log("VoiceRecordManage init")
         this.recordManager = wx.getRecorderManager();
         this.recoderAuthStatus = false
         this.banSendMsg = false
         this.listener = callback
+        this.innerAudioContextList = []
 
         this.recordManager.onStart(() => {
             console.log('record start')
@@ -60,14 +62,17 @@ class VoiceRecordManage {
         this.recordManager.stop()
     }
 
+    public stopAudioPlay() {
+        this.innerAudioContextList.forEach(item => {
+            console.info(`stop and destroy audio play`)
+            item.stop();
+            item.destroy();
+        })
+    }
+
     //调用recorderManager.start开始录音
     private recordLogic() {
         console.log("recordLogic")
-        // wx.showToast({
-        //     title: "正在录音，松开发送，上划取消",
-        //     icon: "none",
-        //     duration: 60000
-        // });
         this.banSendMsg = false; // 允许发送消息
         // TODO, 这里的编码采样率的大小可能影响到整个录音文件的大小
         this.recordManager.start({
@@ -78,7 +83,6 @@ class VoiceRecordManage {
             format: 'aac',
             frameSize: 0.01
         });
-        // this.recordManagerOptions.recodeStatus = 1;
     }
 
     public stopSendMsg() {
@@ -94,7 +98,8 @@ class VoiceRecordManage {
     }
 
     public destroy() {
-        this.recordManager
+        this.recordManager.stop()
+        this.stopAudioPlay()
     }
 
     //判断是否已授权录音权限
@@ -162,11 +167,15 @@ class VoiceRecordManage {
             return
         }
         const audio = wx.createInnerAudioContext();
+        this.innerAudioContextList.push(audio)
         const fileUrl = `https://www.learnaitutorenglish.club/tts?filename=${array[currentIndex].file}`
         console.log(`playNext fileUrl: ${fileUrl}`)
         audio.src = fileUrl
         audio.onPlay(() => {
             console.log("开始播放")
+        })
+        audio.onStop(() => {
+            console.log("停止播报")
         })
         audio.onError((res) => {
             console.log("播放异常:" + res.errMsg)

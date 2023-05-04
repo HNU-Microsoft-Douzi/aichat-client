@@ -23,13 +23,14 @@ Page({
         textContainerPaddingBotton: textContainerPaddingBottomSize,
         rippleStyle: '',
         hideVoiceCurveLine: true,
+        hideLongPressButton: false,
         hideLongPressText: false,
         hideLoaddingDialog: true,
         longPressButtonParams: {
             centerX: 0,
             centerY: 0,
             radius: 0
-        },
+        }
     },
 
     clickCircleVoiceButton: function () {
@@ -60,19 +61,19 @@ Page({
                     'content-type': 'application/json' // 默认值
                 },
                 success(res) {
-                    // wx.hideLoading()
                     const { result } = res.data
-                    console.log(`clickVoiceButton result: ${result}`)
                     page.setData({
                         aiInitText: page.generateAiText(-1, [result]),
-                        showAiTextView: true
+                        showAiTextView: true,
+                        hideLoaddingDialog: true
                     })
                 },
                 fail(res) {
                     console.error(res.errMsg)
                     page.setData({
                         aiInitText: page.generateAiText(-1, ["抱歉，你的网络好像不太好"]),
-                        showAiTextView: true
+                        showAiTextView: true,
+                        hideLoaddingDialog: true
                     })
                     // wx.hideLoading()
                 }
@@ -88,7 +89,7 @@ Page({
                     showAiTextView: false,
                     userConfirmText: event.detail.value,
                     hideLoaddingDialog: false,
-                    inputValue: ''
+                    inputValue: '',
                 })
             },
             onSuccess(text: string) {
@@ -101,7 +102,8 @@ Page({
             onFail() {
                 that.setData({
                     aiInitText: that.generateAiText(-1, ["抱歉，你的网络好像不太好"]),
-                    showAiTextView: true
+                    showAiTextView: true,
+                    hideLoaddingDialog: true
                 })
             }
         }))
@@ -112,9 +114,11 @@ Page({
      */
     pressLongVoiceButton: function (e: { touches: { clientX: number, clientY: number }[] }) {
         console.info("pressLongVoiceButton" + e.touches[0].clientY)
+        this.startPlayCurveWaveAnim()
         this.data.startPoint = e.touches[0]; // 记录长按时开始点信息，后面用于计算上划取消时手指滑动的距离。
         const vR: VoiceRecordManage = this.data.voiceRecorder;
         if (vR) {
+            vR.stopAudioPlay()
             vR.startRecord();
         }
     },
@@ -163,7 +167,8 @@ Page({
         }
         this.setData({
             hideVoiceCurveLine: true,
-            hideLongPressText: false
+            hideLongPressText: false,
+            showAiTextView: this.isAiTextBoxEmpty() ? false : true
         })
     },
 
@@ -178,23 +183,20 @@ Page({
                 console.error(errorMsg)
                 // 关闭录音动画
                 page.setData({
-                    hideVoiceCurveLine: true
+                    hideVoiceCurveLine: true,
+                    showAiTextView: page.isAiTextBoxEmpty() ? false : true
                 })
                 const child = page.selectComponent('#curve-wave-view');
                 child.pause()
             },
             onStart() {
-                page.setData({
-                    hideVoiceCurveLine: false
-                })
-                // 展示录音动画
-                const child = page.selectComponent('#curve-wave-view');
-                child.play()
-                console.log(child)
+
             },
             onEnd() {
                 page.setData({
-                    hideVoiceCurveLine: true
+                    hideVoiceCurveLine: true,
+                    showAiTextView: page.isAiTextBoxEmpty() ? false : true
+
                 })
                 // 关闭录音动画
                 const child = page.selectComponent('#curve-wave-view');
@@ -204,12 +206,17 @@ Page({
             onError(errorMsg: string) {
                 page.setData({
                     aiInitText: page.generateAiText(-1, ["抱歉，你的网络好像不太好"]),
-                    showAiTextView: true
+                    showAiTextView: true,
+                    hideLoaddingDialog: true,
+                    hideLongPressButton: false
                 })
             },
             onStartDownload() {
                 page.setData({
-                    hideLoaddingDialog: false
+                    hideLoaddingDialog: false,
+                    showAiTextView: false, // 开始进行下载时，不允许展示ai的文案，避免文本重叠
+                    hideLongPressButton: true,
+                    hideLongPressText: true
                 })
             },
             onGetWholeTextArray(textArray: Array<string>) {
@@ -219,7 +226,9 @@ Page({
                     aiTextArray: textArray,
                     aiInitText: page.generateAiText(-1, textArray),
                     showAiTextView: true,
-                    hideLoaddingDialog: true
+                    hideLoaddingDialog: true,
+                    hideLongPressButton: false,
+                    hideLongPressText: false
                 });
             },
             onTraverseIndex(index: number) {
@@ -240,10 +249,10 @@ Page({
         // TODO, weszhang, 这里获取到的rect的左上
         const page = this;
         // 注意，这里必须要做一个延时，不然button的参数获取是相对于bottom-container呢，似乎300ms可以确保按钮组件渲染到正确的位置
-        setTimeout(()=>{
+        setTimeout(() => {
             const subQuery = wx.createSelectorQuery()
             subQuery.select('.chat-button').boundingClientRect()
-            subQuery.selectViewport().scrollOffset() 
+            subQuery.selectViewport().scrollOffset()
             subQuery.exec(function (rect) {
                 console.info(`按钮top: ${rect[0].top}`)
                 const voiceButtonTop = rect[0].top
@@ -333,12 +342,49 @@ Page({
             textContainerPaddingBotton: textContainerPaddingBottomSize,
             textContainerBgColor: "#f1eded86"
         })
-        if (that.data.aiInitText) {
-            that.setData({
-                showAiTextView: true
-            })
+        this.setData({
+            showAiTextView: this.isAiTextBoxEmpty() ? false : true
+        })
+    },
+
+    aiImageViewClickEvent: function () {
+        console.info('aiImageViewClickEvent')
+
+        this.setData({
+            showAiTextView: this.isAiTextBoxEmpty() ? this.data.showAiTextView : !this.data.showAiTextView
+        })
+    },
+
+    isAiTextBoxEmpty: function () {
+        if (Object.keys(this.data.aiInitText[0]).length !== 0) {
+            console.log("isAiTextBoxEmpty aiInitText not empty")
+            return false
+        } else {
+            console.log("isAiTextBoxEmpty aiInitText empty")
+            return true
         }
     },
+
+    startPlayCurveWaveAnim: function () {
+        console.info(`startPlayCurveWaveAnim`)
+        this.setData({
+            hideVoiceCurveLine: false,
+            showAiTextView: false
+        })
+        // 展示录音动画
+        const child = this.selectComponent('#curve-wave-view');
+        child.play()
+    },
+
+    checkTextViewHeight: function () {
+        const textView = document.getElementById('text-view');
+        if (textView.scrollHeight > textView.clientHeight) {
+            textView.style.marginTop = `${textView.scrollHeight - textView.clientHeight}px`;
+        } else {
+            textView.style.marginTop = '0';
+        }
+    },
+
     generateAiText(index: number, textArray: Array<String>): Array<object> {
         const richText = [];
         for (var i = 0; i < textArray.length; i++) {

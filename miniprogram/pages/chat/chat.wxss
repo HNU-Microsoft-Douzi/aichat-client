@@ -20,7 +20,6 @@ page {
     left: 7%;
     right: 7%;
     height: auto;
-    margin-top: 60%;
     background-color: white;
     position: absolute;
     z-index: 1;
@@ -30,10 +29,13 @@ page {
     padding-bottom: 10rpx;
     padding-left: 20rpx;
     padding-right: 20rpx;
-    min-height: 20%;
-    max-height: 48%;
+    min-height: 120px;
+    max-height: 52%;
     overflow-y: auto;
     overflow-x: scroll;
+    transition: margin-top 0.3s ease-out;
+    top: 50%;
+    transform: translateY(-30%);
 }
 
 .ai-image {
@@ -62,13 +64,14 @@ page {
 }
 
 .chat-button {
-    width: 200rpx !important;
-    height: 200rpx;
-    background: linear-gradient(135deg, rgb(0,159,255) 0%, rgb(236,47,75) 100%);
-    border-radius: 360rpx;
+    width: 160rpx !important;
+    height: 160rpx;
+    background: linear-gradient(135deg, rgb(0, 183, 255) 0%, rgb(255, 0, 157) 100%);
+    border-radius: 50%;
     margin-top: 10%;
     align-items: center;
     display: flex;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .input-container {
@@ -105,7 +108,7 @@ page {
     opacity: 0.6;
     background: rgb(0, 0, 0);
     transform: scale(0.8, 0.8);
-    transition: transform 0.5s ease-in-out;
+    transition: transform 0.3s ease-in-out;
 }
 
 .fullscreen {

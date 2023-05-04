@@ -1,8 +1,8 @@
 <!--pages/chat/chat.wxml-->
 <view class="above-container">
     <!-- 此处放置页面主要内容 -->
-    <rich-text nodes="{{aiInitText}}" class="ai-content" wx:if="{{showAiTextView}}" selectable="true"></rich-text>
-    <image class="ai-image" style="background-color: #000000;" mode="widthFix" src="../../images/girl.jpg"></image>
+    <rich-text nodes="{{aiInitText}}" class="ai-content" wx:if="{{showAiTextView}}" selectable="true" ></rich-text>
+    <image class="ai-image" style="background-color: #000000;" mode="widthFix" src="../../images/girl.jpg" bindtap="aiImageViewClickEvent"></image>
     <view class="curve-anim-container" style="position:relative; z-index: 5;" hidden="{{hideVoiceCurveLine}}">
         <curve-wave id="curve-wave-view" hidden="{{hideVoiceCurveLine}}"></curve-wave>
     </view>
@@ -10,8 +10,8 @@
 <view class="bottom-container">
     <text class="user-text" wx:if="{{showUserTextView}}">{{userConfirmText}}</text>
     <view class="voice-container" wx:if="{{inputMode}}">
-        <button :style="rippleStyle" class="chat-button" type="mini" bindtap="clickCircleVoiceButton" bindlongpress='pressLongVoiceButton' longpress-duration="300" hover-class="chat-button-hover-class" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved">
-            <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(100%);" />
+        <button :style="rippleStyle" class="chat-button" type="mini" bindtap="clickCircleVoiceButton" bindlongpress='pressLongVoiceButton' longpress-duration="300" hover-class="chat-button-hover-class" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved" hidden="{{hideLongPressButton}}">
+            <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(130%);"/>
         </button>
         <view hidden="{{hideLongPressText}}">
             <text style="text-align: center; display: flex; justify-content: center; margin-top: 12rpx; font-size: 30rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
@@ -25,5 +25,5 @@
         <input class="user-input" confirm-type="send" bindconfirm="userConfirmMessage" value='{{inputValue}}' bindinput="inputChange" adjust-position='{{false}}' bindfocus="foucus" bindblur="blur" />
     </view>
 </view>
-<view class="fullscreen" hidden="{{hideVoiceCurveLine || hideLoaddingDialog}}"></view>
-<loadding style="display: flex; justify-content: center; transform: translateY(-1000rpx);" wx:if="{{!hideLoaddingDialog}}"></loadding>
+<view class="fullscreen" hidden="{{hideVoiceCurveLine && hideLoaddingDialog}}"></view>
+<loadding style="position: absolute; top: 260px; left: 50%; transform: translateX(-50%);" wx:if="{{!hideLoaddingDialog}}"></loadding>
