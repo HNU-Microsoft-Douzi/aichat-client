@@ -1,20 +1,50 @@
-export function sendUserTextToService(msg: String, requestCall: RequestCallback) {
-    console.log("sendUserTextToService: " + msg)
+// export function sendUserTextToService(msg: String, requestCall: RequestCallback) {
+//     console.log("sendUserTextToService: " + msg)
+//     requestCall.onStart()
+//     // 开始向后台发送post请求
+//     wx.request({
+//         url: 'https://www.yubanstar.top/chat',
+//         data: {
+//             text: msg
+//         },
+//         timeout: 30000,
+//         header: {
+//             'content-type': 'application/json' // 默认值
+//         },
+//         success(res) {
+//             const { result } = res.data
+//             console.log(`sendUserTextToService response: ${result}`)
+//             requestCall.onSuccess(result)
+//         },
+//         fail(res) {
+//             console.error(res.errMsg)
+//             requestCall.onFail()
+//         }
+//     })
+// }
+
+export function getGrammerTreeJson(sentence: string, requestCall: RequestCallback) {
+    if (!sentence || sentence.trim().length === 0) {
+        console.error(`getGrammerTree error: sentence is null`)
+        return;
+    }
     requestCall.onStart()
-    // 开始向后台发送post请求
     wx.request({
-        url: 'https://www.learnaitutorenglish.club/chat', //仅为示例，并非真实的接口地址
+        url: 'https://www.yubanstar.top/syntaxtree',
         data: {
-            text: msg
+            text: sentence
         },
         timeout: 30000,
         header: {
             'content-type': 'application/json' // 默认值
         },
         success(res) {
-            const { result } = res.data
-            console.log(`sendUserTextToService response: ${result}`)
-            requestCall.onSuccess(result)
+            const data = res.data
+            console.info(`data: ${JSON.stringify(data)}`)
+            const translation = data['translation']
+            const keyWords = data['key words']
+            console.info(`translation: ${translation} keyWords: ${keyWords}`)
+            requestCall.onSuccess(data)
         },
         fail(res) {
             console.error(res.errMsg)
@@ -23,8 +53,19 @@ export function sendUserTextToService(msg: String, requestCall: RequestCallback)
     })
 }
 
+function isJson(str) {
+    try {
+      JSON.parse(str);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+
 interface RequestCallback {
     onStart(): void
-    onSuccess(text: string): void
+    onSuccess(response: any): void
     onFail(): void
 }
+

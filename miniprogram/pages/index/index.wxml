@@ -1,1 +1,6 @@
-<loadding></loadding>
+<!-- <loadding></loadding> -->
+<!-- <text-group id="my-text-group"></text-group> -->
+<view class="page">
+    <button bindtap="tap_click">动画开关</button>
+    <sidebar></sidebar>
+</view>

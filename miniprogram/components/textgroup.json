@@ -1,0 +1,6 @@
+{
+    "component": true,
+    "usingComponents": {
+        "grammer-tree-group" : "/components/grammerTreeGroup"
+    }
+}

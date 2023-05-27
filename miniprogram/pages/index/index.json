@@ -1,6 +1,9 @@
 {
   "usingComponents": {
     "loadding": "/components/robotLoadding",
-    "curve-wave": "/components/curveWaveAnim"    
+    "curve-wave": "/components/curveWaveAnim",
+    "button-wave": "/components/buttonWave",
+    "text-group": "/components/textgroup",
+    "sidebar" : "/components/sidebar"
   }
 }

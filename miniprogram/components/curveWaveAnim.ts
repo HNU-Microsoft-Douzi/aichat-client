@@ -45,7 +45,7 @@ Component({
                     loop: true,
                     autoplay: false,
                     // animationData: require('../json/curve-wave.js'),
-                    path: 'https://www.learnaitutorenglish.club/lottie?filename=curve-wave.json',
+                    path: 'https://www.yubanstar.top/lottie?filename=curve-wave.json',
                      rendererSettings: {
                         context,
                     },

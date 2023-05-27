@@ -17,29 +17,34 @@ page {
 }
 
 .ai-content {
-    left: 7%;
-    right: 7%;
+    left: 5%;
+    right: 5%;
     height: auto;
-    background-color: white;
     position: absolute;
-    z-index: 1;
-    opacity: 75%;
-    border-radius: 20rpx;
-    padding-top: 10rpx;
-    padding-bottom: 10rpx;
-    padding-left: 20rpx;
-    padding-right: 20rpx;
-    min-height: 120px;
-    max-height: 52%;
-    overflow-y: auto;
-    overflow-x: scroll;
-    transition: margin-top 0.3s ease-out;
     top: 50%;
-    transform: translateY(-30%);
 }
+
+.menu-button {
+    width: 42px;
+    height: 42px;
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 90px;
+    top: 7%;
+    left: 5%;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+}
+
+.menu-button-active {
+    /* 例如，改变背景颜色 */
+    background-color: rgba(255, 255, 255, 0.7);
+  }
 
 .ai-image {
     width: 100%;
+    min-height: 580px;
 }
 
 .curve-anim-container {
@@ -66,9 +71,9 @@ page {
 .chat-button {
     width: 160rpx !important;
     height: 160rpx;
-    background: linear-gradient(135deg, rgb(0, 183, 255) 0%, rgb(255, 0, 157) 100%);
+    background: linear-gradient(135deg, rgb(67, 183, 255) 0%, rgb(255, 0, 157) 100%);
     border-radius: 50%;
-    margin-top: 10%;
+    margin-top: 15%;
     align-items: center;
     display: flex;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 4px 8px rgba(0, 0, 0, 0.2);

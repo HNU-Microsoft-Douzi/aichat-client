@@ -43,7 +43,7 @@ Component({
                 this.data.ani = lottie.loadAnimation({
                     loop: true,
                     autoplay: true,
-                    path: 'https://www.learnaitutorenglish.club/lottie?filename=loadding.json',
+                    path: 'https://www.yubanstar.top/lottie?filename=loadding.json',
                      rendererSettings: {
                         context,
                     },

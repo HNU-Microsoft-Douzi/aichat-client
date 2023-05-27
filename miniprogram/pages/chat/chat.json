@@ -1,7 +1,13 @@
 {
   "usingComponents": {
     "loadding": "/components/robotLoadding",
-    "curve-wave": "/components/curveWaveAnim"    
+    "curve-wave": "/components/curveWaveAnim",
+    "mp-dialog": "weui-miniprogram/dialog/dialog",
+    "button-wave": "/components/buttonWave",
+    "text-group": "/components/textgroup",
+    "sidebar" : "/components/sidebar",
+    "grammer-tree-group" : "/components/grammerTreeGroup",
+    "mui-drawer": "../../components/drawer/drawer"
   },
   
   "disableScroll": true,

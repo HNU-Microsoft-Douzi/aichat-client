@@ -1,0 +1,30 @@
+<template name="drawer">
+  <view
+    class="mui mui-drawer-root drawer-{{drawerType}} {{mClass}}"
+    style="{{mStyle}}"
+    catchtap="_CatchTap"
+  >
+    <mui-paper
+      elevation="{{elevation}}"
+      mClass="drawer-paper anchor-{{anchor}} position-{{position}}"
+      mStyle="{{_sizeStyle}}{{_transitionStyle}}{{(persistent && !_open) ? 'visibility: hidden;' : ''}}"
+      scrollView
+      square
+    >
+      <slot />
+    </mui-paper>
+  </view>
+</template>
+<block wx:if="{{variant !== 'temporary'}}">
+  <template is="drawer" data="{{ ...{..._templateData, _open: _open, _transitionStyle: _transitionStyle} }}" />
+</block>
+<block wx:else>
+  <view
+    wx:if="{{_open}}"
+    class="mui mui-backdrop"
+    style="z-index: 1200;"
+    bindtap="_BackdropClick"
+  >
+    <template is="drawer" data="{{ ...{..._templateData, _transitionStyle: _transitionStyle} }}" />
+  </view>
+</block>

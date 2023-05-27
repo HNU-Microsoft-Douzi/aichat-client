@@ -1,0 +1,3 @@
+<!--components/buttonWave.wxml-->
+
+<button class = "{{classStyle}}" wx:if="{{show}}"></button>

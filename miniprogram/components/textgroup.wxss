@@ -1,0 +1,28 @@
+/* components/textgroup.wxss */
+
+.text-group {
+    z-index: 1;
+    opacity: 86%;
+    border-radius: 20rpx;
+    padding-top: 10rpx;
+    padding-bottom: 10rpx;
+    padding-left: 20rpx;
+    padding-right: 20rpx;
+    min-height: 120px;
+    max-height: 52%;
+    overflow-y: auto;
+    overflow-x: scroll;
+    transition: margin-top 0.3s ease-out;
+    /* transform似乎会影响到点击事件的区域范围 */
+    transform: translateY(-30%);
+    background-color: white;
+}
+
+.text-item {
+    /* font-size: 17px; */
+    font-weight: 200;
+}
+.highlight {
+    font-weight: 500;
+    color: #1485EE;
+  }

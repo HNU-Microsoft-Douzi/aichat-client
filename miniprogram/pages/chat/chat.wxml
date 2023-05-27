@@ -1,29 +1,30 @@
 <!--pages/chat/chat.wxml-->
+<!-- 注意，这里建议按照小程序的规范给出4个不同的层级出来 -->
 <view class="above-container">
-    <!-- 此处放置页面主要内容 -->
-    <rich-text nodes="{{aiInitText}}" class="ai-content" wx:if="{{showAiTextView}}" selectable="true" ></rich-text>
-    <image class="ai-image" style="background-color: #000000;" mode="widthFix" src="../../images/girl.jpg" bindtap="aiImageViewClickEvent"></image>
+    <text-group class="ai-content" id="ai-text-group"></text-group>
+    <image class="ai-image" style="background-color: #000000;" mode="widthFix" src="https://www.yubanstar.top/pic?filename=girl.jpg" bindtap="aiImageViewClickEvent"></image>
     <view class="curve-anim-container" style="position:relative; z-index: 5;" hidden="{{hideVoiceCurveLine}}">
         <curve-wave id="curve-wave-view" hidden="{{hideVoiceCurveLine}}"></curve-wave>
     </view>
+    <view class='menu-button' hover-class="menu-button-active" bindtap="clickMenuButton">
+        <image src="https://www.yubanstar.top/pic?filename=setting.png" style="width: 32px; height: 32px;"/>
+    </view>
 </view>
 <view class="bottom-container">
-    <text class="user-text" wx:if="{{showUserTextView}}">{{userConfirmText}}</text>
     <view class="voice-container" wx:if="{{inputMode}}">
-        <button :style="rippleStyle" class="chat-button" type="mini" bindtap="clickCircleVoiceButton" bindlongpress='pressLongVoiceButton' longpress-duration="300" hover-class="chat-button-hover-class" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved" hidden="{{hideLongPressButton}}">
-            <image src="../../images/v2_rr1xa3.png" mode="aspectFit" style="transform: scale(130%);"/>
+        <button :style="rippleStyle" class="chat-button" type="mini" bindtap="clickCircleVoiceButton" bindlongpress='pressLongVoiceButton' longpress-duration="300" hover-class="chat-button-hover-class" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved" wx:if="{{! hideLongPressButton}}">
+            <image src="https://www.yubanstar.top/pic?filename=mac_icon.png" mode="aspectFit" style="transform: scale(130%);"/>
         </button>
         <view hidden="{{hideLongPressText}}">
             <text style="text-align: center; display: flex; justify-content: center; margin-top: 12rpx; font-size: 30rpx; color: rgba(36, 119, 249, 1);">长按说话</text>
         </view>
-        <button-wave style="top: 0; position: absolute;"></button-wave>
-    </view>
-    <view class="input-container" hidden="{{inputMode}}" style="bottom:{{textContainerBottom}}px; padding-bottom:{{textContainerPaddingBotton}}px; background-color:{{textContainerBgColor}}">
-        <view class="voice-button" bindtap="clickVoiceButton">
-            <image src="../../images/v2_rr1xqf.png" style="width: 62rpx; height: 62rpx;" />
-        </view>
-        <input class="user-input" confirm-type="send" bindconfirm="userConfirmMessage" value='{{inputValue}}' bindinput="inputChange" adjust-position='{{false}}' bindfocus="foucus" bindblur="blur" />
     </view>
 </view>
 <view class="fullscreen" hidden="{{hideVoiceCurveLine && hideLoaddingDialog}}"></view>
+
+<sidebar id="menu-bar">
+</sidebar>
 <loadding style="position: absolute; top: 260px; left: 50%; transform: translateX(-50%);" wx:if="{{!hideLoaddingDialog}}"></loadding>
+<button-wave id="button-wave-view" style="position: absolute; top: 0;left: 0; right: 0; margin-top: 1310rpx;" hidden="{{hideButtonWave}}"></button-wave>
+
+<!-- <grammer-tree-group></grammer-tree-group> -->

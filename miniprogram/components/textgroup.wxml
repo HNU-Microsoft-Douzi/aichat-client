@@ -1,0 +1,8 @@
+<!--components/textgroup.wxml-->
+<view class="text-group" hidden="{{!showTextGroup}}">
+    <block wx:for="{{sentences}}" wx:key="index">
+        <text class="text-item {{current_index === index?'highlight':' '}}" data-index="{{index}}" bindtap="onTap">{{item}}</text>
+    </block>
+</view>
+
+<grammer-tree-group id="grammer-tree"></grammer-tree-group>

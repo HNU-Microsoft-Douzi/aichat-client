@@ -1,0 +1,7 @@
+<!--components/grammerTreeGroup.wxml-->
+<view class="custom-view-container" wx:if="{{componentVisible}}">
+    <view class="mask" bindtap="hideComponent"></view>
+    <text class="translation-container" wx:if="{{translationVisible}}">{{translation}}</text>
+    <text class="grammar-container" wx:if="{{grammarVisible}}">{{grammar}}</text>
+    <text class="words-container" wx:if="{{wordsVisible}}">{{words}}</text>
+</view>

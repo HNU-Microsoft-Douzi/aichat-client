@@ -1,0 +1,17 @@
+/* components/buttonWave.wxss */
+
+.shine-button {
+    width: 160rpx !important; 
+    height: 160rpx; 
+    border-radius: 50%; 
+    background-color: rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0px 10px rgba(255, 255, 255, 0.8), 0 0px 10px rgba(255, 255, 255, 0.3);
+}
+
+.shine-button.active {
+    width: 160rpx !important; 
+    height: 160rpx; 
+    border-radius: 50%; 
+    background-color: white;
+    box-shadow: 0 0px 70px rgba(255, 255, 255, 1), 0 0px 70px rgba(255, 255, 255, 0.3);
+  }
