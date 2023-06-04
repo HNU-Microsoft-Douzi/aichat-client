@@ -1,7 +1,6 @@
-import { VoiceRecordManage } from "./recordManage"
-
-const recordModule = require("recordManage")
 // pages/chat/chat.ts
+
+import { VoiceRecordManage } from "../../utils/record-manage"
 
 const textContainerPaddingBottomSize = 20
 const textContainerPaddingBottomUpWithKeyboard = 5
@@ -133,7 +132,7 @@ Page({
     onLoad() {
         console.log("onLoad")
         const page = this
-        const vR = new recordModule.VoiceRecordManage(({
+        const vR = new VoiceRecordManage(({
             onError(errorMsg: string) {
                 console.error(errorMsg)
                 page.showAiTextView()
@@ -225,11 +224,7 @@ Page({
      * 生命周期函数--监听页面显示
      */
     onShow() {
-        wx.showToast({
-            title: `iC: ${getApp().globalData.inviteCode}`,
-            icon: 'success',
-            duration: 2000
-        })
+        
     },
 
     /**
@@ -372,7 +367,7 @@ Page({
 
     highlightSentence(index: number) {
         const textGroup = this.selectComponent('#ai-text-group');
-            textGroup.highlight(index)
+        textGroup.highlight(index)
 
     },
 

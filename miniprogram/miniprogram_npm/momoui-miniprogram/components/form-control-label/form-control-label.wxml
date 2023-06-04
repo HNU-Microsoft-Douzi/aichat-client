@@ -1,0 +1,9 @@
+<view
+  class="mui mui-form-control-label label-placement-{{labelPlacement}} disabled-{{disabled}} {{mClass}}"
+  style="{{mStyle}}"
+  capture-catch:tap="_Click"
+>
+  <slot />
+  <mui-typography wx:if="{{label}}">{{label}}</mui-typography>
+  <slot name="label" />
+</view>

@@ -1,0 +1,11 @@
+<!--components/textgroup.wxml-->
+<view class="text-group" hidden="{{!showTextGroup}}" style="margin-top: {{marginTop}};">
+    <block wx:for="{{sentences}}" wx:key="index">
+        <text class="text-item {{current_index === index?'highlight':' '}}" data-index="{{index}}" bindtap="onTap">{{item}}</text>
+    </block>
+</view>
+<view class="translate-view" wx:if="{{showTranslateView}}">
+    <text class="translate-text">{{translation}}</text>
+</view>
+<!-- <mp-loading></mp-loading> -->
+<!-- <grammer-tree-group id="grammer-tree"></grammer-tree-group> -->

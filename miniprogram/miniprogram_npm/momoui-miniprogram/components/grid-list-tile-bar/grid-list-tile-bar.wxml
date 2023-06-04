@@ -1,0 +1,22 @@
+<view
+  class="mui mui-grid-list-tile-bar tile-position-{{titlePosition}} action-position-{{actionPosition}} {{mClass}}"
+  style="{{_innerStyles}}{{mStyle}}"
+>
+  <view class="title-wrap">
+    <view class="title {{mTitleClass}}" style="{{mTitleStyle}}">
+      <block wx:if="{{title}}">
+        {{title}}
+      </block>
+      <slot wx:else name="title" />
+    </view>
+    <view class="sub-title {{mSubTitleClass}}" style="{{mSubTitleStyle}}">
+      <block wx:if="{{subTitle}}">
+        {{subTitle}}
+      </block>
+      <slot wx:else name="sub-title" />
+    </view>
+  </view>
+  <view class="action-icon {{mActionIconClass}}" style="{{mActionIconStyle}}">
+    <slot name="action-icon" />
+  </view>
+</view>

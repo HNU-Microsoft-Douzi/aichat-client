@@ -1,6 +1,2 @@
-<!-- <loadding></loadding> -->
-<!-- <text-group id="my-text-group"></text-group> -->
-<view class="page">
-    <button bindtap="tap_click">动画开关</button>
-    <sidebar></sidebar>
-</view>
+<!-- <van-slider value="50" bar-height="4px" active-color="#ee0a24"/> -->
+

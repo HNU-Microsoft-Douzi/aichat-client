@@ -9,7 +9,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@vant/weapp": "^1.10.19",
     "lottie-miniprogram": "^1.0.12",
+    "momoui-miniprogram": "^2.0.5",
+    "tdesign-miniprogram": "^1.1.8",
     "weui-miniprogram": "^1.2.7"
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^3.9.1"
   }
 }

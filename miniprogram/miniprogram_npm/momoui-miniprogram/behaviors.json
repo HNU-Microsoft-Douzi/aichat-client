@@ -1,0 +1,13 @@
+{
+  "commonJs": [
+    "./behaviors/checkGroupController",
+    "./behaviors/checkController",
+    "./behaviors/muiBase",
+    "./behaviors/muiController",
+    "./behaviors/openType",
+    "./behaviors/rippleBase",
+    "./behaviors/scrollView",
+    "./behaviors/transition/transition",
+    "./behaviors/transition/openClose"
+  ]
+}

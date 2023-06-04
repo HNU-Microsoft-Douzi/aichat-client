@@ -1,0 +1,6 @@
+<view
+  class="mui mui-button-group orientation-{{orientation}} disable-elevation-{{disableElevation}} {{muiClasses}}"
+  style="{{mStyle}}"
+>
+  <slot />
+</view>

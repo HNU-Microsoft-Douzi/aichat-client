@@ -1,0 +1,12 @@
+/* components/audio-setting-popup/audio-setting-pop.wxss */
+.custom-button {
+    width: 36px;
+    height: 18px;
+    border-radius: 13px;
+    background-color: rgb(27, 115, 247);
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}

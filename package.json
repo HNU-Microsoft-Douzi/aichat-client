@@ -1,0 +1,21 @@
+{
+  "name": "aichat-client",
+  "version": "1.0.0",
+  "description": "english learning ai chat client for mini-program of wechat",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HNU-Microsoft-Douzi/aichat-client.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HNU-Microsoft-Douzi/aichat-client/issues"
+  },
+  "homepage": "https://github.com/HNU-Microsoft-Douzi/aichat-client#readme",
+  "dependencies": {
+    "tdesign-miniprogram": "^1.1.8"
+  }
+}

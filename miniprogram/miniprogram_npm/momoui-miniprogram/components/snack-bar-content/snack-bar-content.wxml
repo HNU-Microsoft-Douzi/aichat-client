@@ -1,0 +1,22 @@
+<mui-paper class="snack-bar-content-native-wrapper" mClass="snack-bar-content-root {{mClass}}" mStyle="{{mStyle}}" elevation="6">
+  <view class="snack-bar-content-message">
+    <block wx:if="{{message}}">
+      {{message}}
+    </block>
+    <slot wx:else name="message" />
+  </view>
+  <view class="snack-bar-content-action">
+    <mui-icon-button
+      wx:if="{{action}}"
+      bindtap="_ActionHandler"
+      color="{{action.color || 'inherit'}}"
+      icon="{{action.icon || action}}"
+      iconColor="{{action.iconColor}}"
+      iconSize="{{action.iconSize}}"
+      mClass="{{action.class}}"
+      mStyle="{{action.style}}"
+      size="small"
+    />
+    <slot wx:else name="action" />
+  </view>
+</mui-paper>

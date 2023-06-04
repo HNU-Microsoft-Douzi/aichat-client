@@ -1,13 +1,12 @@
 {
   "usingComponents": {
-    "loadding": "/components/robotLoadding",
-    "curve-wave": "/components/curveWaveAnim",
+    "loadding": "/components/robot-loadding/robotLoadding",
+    "curve-wave": "/components/curve-wave-anim/curveWaveAnim",
     "mp-dialog": "weui-miniprogram/dialog/dialog",
-    "button-wave": "/components/buttonWave",
-    "text-group": "/components/textgroup",
-    "sidebar" : "/components/sidebar",
-    "grammer-tree-group" : "/components/grammerTreeGroup",
-    "mui-drawer": "../../components/drawer/drawer"
+    "button-wave": "/components/button-wave/buttonWave",
+    "text-group": "/components/textgroup/textgroup",
+    "sidebar" : "/components/sidebar/sidebar",
+    "grammer-tree-group" : "/components/grammer-tree-group/grammerTreeGroup"
   },
   
   "disableScroll": true,

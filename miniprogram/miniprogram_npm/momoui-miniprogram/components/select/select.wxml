@@ -1,0 +1,43 @@
+<picker
+  custom-item="{{customItem}}"
+  disabled="{{disabled}}"
+  end="{{end}}"
+  fields="{{fields}}"
+  headerText="{{headerText}}"
+  value="{{_value}}"
+  mode="{{mode}}"
+  range="{{range}}"
+  range-key="{{rangeKey}}"
+  start="{{start}}"
+  style="{{fullWidth ? '' : 'display: inline-flex;'}}"
+  bindchange="_Change"
+  bindcolumnchange="_ColumnChange"
+  bindcancel="_Cancel"
+  bindtap="_InputFocus"
+>
+  <mui-input
+    color="{{color}}"
+    disabled="{{disabled}}"
+    disableDefaultPadding="{{disableDefaultPadding}}"
+    disable-underline="{{disableUnderline}}"
+    error="{{error}}"
+    full-width="{{fullWidth}}"
+    class="_mui-select-input"
+    input-disabled
+    mClass="mui-select-input {{mClass}}"
+    mStyle="{{mStyle}}"
+    margin="{{margin}}"
+    name="{{name}}"
+    placeholder="{{placeholder}}"
+    placeholderStyle="{{placeholderStyle}}"
+    placeholderClass="{{placeholderClass}}"
+    required="{{required}}"
+    value="{{_display}}"
+    variant="{{variant}}"
+  >
+    <slot name="startAdornment" slot="startAdornment" />
+    <mui-input-adornment mClass="select-arrow" slot="endAdornment" position="end">
+      <mui-icon name="menu-{{_focus ? 'up' : 'down'}}" mStyle="font-size: 24px;" rerender="{{disabled}}" />
+    </mui-input-adornment>
+  </mui-input>
+</picker>

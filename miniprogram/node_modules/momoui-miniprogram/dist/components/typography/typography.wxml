@@ -1,0 +1,6 @@
+<view
+  class="mui mui-typography display-{{display}} gutterBottom-{{gutterBottom}} paragraph-{{paragraph}} no-wrap-{{noWrap}} {{muiClasses}}"
+  style="{{mStyle}}"
+>
+  <slot />
+</view>

@@ -1,0 +1,33 @@
+<!--components/audio-setting-popup/audio-setting-pop.wxml-->
+<van-popup show="{{show}}" round bind:close="onClose">
+    <view style="width: 300px;min-height: 200px;">
+        <view style="width: 90%; display: flex; align-items: center;padding-right: 20px;height: 80px;">
+            <text style="margin-left:15px; margin-right: 15px; font-size: 14px;color: rgb(54, 54, 54);">语速：</text>
+            <view style="width: 70%;">
+                <van-slider value="{{ currentValue }}" use-button-slot bind:drag="onDrag" step="10" min="50" max="200">
+                    <view class="custom-button" slot="button">{{ currentValue }}%</view>
+                </van-slider>
+            </view>
+        </view>
+        <!-- <van-divider /> -->
+        <view style="width: 90%; display: flex; align-items: center;padding-right: 20px;height: 80px;">
+            <text style="margin-left:15px; margin-right: 15px; font-size: 14px;color: rgb(54, 54, 54);">语言：</text>
+            <view style="width: 70%;">
+                <van-radio-group value="{{ radio }}" bind:change="onChange">
+                    <van-radio name="1">English</van-radio>
+                    <van-radio name="2">粤语</van-radio>
+                    <van-radio name="3">中文</van-radio>
+                </van-radio-group>
+            </view>
+        </view>
+        <!-- <view style="width: 90%; display: flex; align-items: center;padding-right: 20px;height: 80px;">
+            <text style="margin-left:15px; margin-right: 15px; font-size: 14px;color: rgb(54, 54, 54);">引擎：</text>
+            <view style="width: 70%;">
+                <van-radio-group value="{{ radioSecond }}" bind:change="onChangeSecond">
+                    <van-radio name="1">快速(讯飞)</van-radio>
+                    <van-radio name="2">高质(微软)</van-radio>
+                </van-radio-group>
+            </view>
+        </view> -->
+    </view>
+</van-popup>

@@ -1,0 +1,7 @@
+<mui-form-group
+  mClass="{{mClass}}"
+  mStyle="{{mStyle}}"
+  row="{{row}}"
+>
+  <slot />
+</mui-form-group>

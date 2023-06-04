@@ -1,0 +1,27 @@
+<view
+  class="mui mui-tooltip-root {{mClass}}"
+  style="{{mStyle}}"
+>
+  <mui-popover
+    anchorOrigin="{{anchorOrigin}}"
+    elevation="{{0}}"
+    onBackdropClick="{{_onBackdropClick}}"
+    onClose="{{onClose}}"
+    open="{{open}}"
+    transformOrigin="{{transformOrigin}}"
+    transitions="{{transitions}}"
+    transitionDelay="{{transitionDelay}}"
+    transitionDuration="{{transitionDuration}}"
+  >
+    <view slot="anchor" bind:touchstart="_showTooltip">
+      <slot />
+    </view>
+    <view class="mui-tooltip">
+      <view wx:if="{{title}}" class="tooltip-title arrow-placement-{{placement}}">
+        {{title}}
+        <view wx:if="{{arrow}}" class="tooltip-arrow arrow-placement-{{placement}}" />
+      </view>
+      <slot name="title" />
+    </view>
+  </mui-popover>
+</view>

@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "mui-list-subheader": "../list-subheader/list-subheader"
+  }
+}

@@ -1,0 +1,10 @@
+<view
+  class="mui mui-collapse-container {{mClass}}"
+  style="min-height: 0;transition-duration: {{timeout}}ms;{{_openStyles}};{{mStyle}}"
+>
+  <view class="mui-collapse-wrapper">
+    <view class="mui-collapse-wrapper-inner">
+      <slot />
+    </view>
+  </view>
+</view>

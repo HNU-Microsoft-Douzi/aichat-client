@@ -1,0 +1,43 @@
+<mui-button-base
+  component="{{button ? 'button' : 'view'}}"
+  disabled="{{disabled}}"
+  disableRipple="{{!button}}"
+  hoverClass="mui-list-item-hover"
+  mClass="mui mui-list-item divider-{{divider}} align-items-{{alignItems}} selected-{{selected}} button-{{button}} disable-gutters-{{disableGutters}} dense-{{dense}} {{mClass}}"
+  mStyle="{{_paddingLeftStyle}}{{mStyle}}"
+>
+  <mui-list-item-avatar wx:if="{{avatar}}">
+    <mui-avatar
+      icon="{{avatar.icon || avatar}}"
+      iconSize="{{avatar.iconSize}}"
+      iconColor="{{avatar.iconColor}}"
+      mStyle="{{avatar.style || ''}}"
+      mClass="{{avatar.class || ''}}"
+      src="{{avatar.src}}"
+      variant="{{avatar.variant || 'circle'}}"
+    />
+  </mui-list-item-avatar>
+  <mui-list-item-icon wx:if="{{icon}}">
+    <mui-icon
+      color="{{icon.color}}"
+      mClass="{{icon.class || ''}}"
+      mStyle="{{icon.style || ''}}"
+      name="{{icon.name || icon}}"
+      size="{{icon.size}}"
+      spin="{{icon.spin}}"
+      src="{{icon.src}}"
+    />
+  </mui-list-item-icon>
+  <slot />
+  <mui-list-item-text wx:if="{{primary}}" primary="{{primary}}" secondary="{{secondary}}" />
+  <mui-list-item-secondary-action>
+    <mui-icon-button
+      wx:if="{{secondaryAction}}"
+      catch:tap="_secondaryAction"
+      catch:longpress="_secondaryLongpress"
+      icon="{{secondaryAction.icon}}"
+      color="{{secondaryAction.color}}"
+      iconSize="{{secondaryAction.size || 24}}"
+    />
+  </mui-list-item-secondary-action>
+</mui-button-base>

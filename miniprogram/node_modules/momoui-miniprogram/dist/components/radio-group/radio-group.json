@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "mui-form-group": "../form-group/form-group"
+  }
+}

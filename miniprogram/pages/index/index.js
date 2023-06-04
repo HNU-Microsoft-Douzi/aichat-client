@@ -2,11 +2,37 @@
 import lottie from 'lottie-miniprogram'
 Page({
     data: {
-        side: {//滑动操作
-          newopen: false,//判断侧边栏是否打开-显示
-        },
+        radio: "1",
+        radioSecond: "1",
+        show: true,
+        currentValue: 60,
+    },
+    onChange(event) {
+        this.setData({
+            radio: event.detail,
+        });
+    },
+
+    onChangeSecond(event) {
+        this.setData({
+            radioSecond: event.detail,
+        });
+    },
+
+    onClick(event) {
+        const {
+            name
+        } = event.currentTarget.dataset;
+        this.setData({
+            radio: name,
+        });
+    },
+    onClose() {
+        this.setData({ show: false });
       },
-      tap_click: function () {//点击菜单
-          this.setData({ 'side.newopen': !this.data.side.newopen });
-      }
+      onDrag(event) {
+        this.setData({
+          currentValue: event.detail.value,
+        });
+      },
 })

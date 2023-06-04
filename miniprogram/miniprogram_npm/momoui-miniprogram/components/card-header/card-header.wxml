@@ -1,0 +1,55 @@
+<view
+  class="mui mui-card-header-root {{mClass}}"
+  style="{{mStyle}}"
+>
+  <view class="card-header-avatar">
+    <mui-avatar
+      wx:if="{{avatar}}"
+      src="{{avatar.src}}"
+      icon="{{avatar.icon || (avatar.src ? '' : avatar)}}"
+      iconSize="{{avatar.iconSize}}"
+      iconColor="{{avatar.iconColor}}"
+      mStyle="{{avatar.style || ''}}"
+      mClass="{{avatar.class || ''}}"
+      variant="{{avatar.variant || 'circle'}}"
+    />
+    <slot wx:else name="avatar" />
+  </view>
+  <view class="card-header-content">
+    <block wx:if="{{title}}">
+      <mui-typography
+        mClass="card-header-content-title"
+        variant="body2"
+        display="block"
+      >
+        {{title}}
+      </mui-typography>
+    </block>
+    <slot wx:else name="title" />
+    <block wx:if="{{subheader}}">
+      <mui-typography
+        mClass="card-header-content-subheader"
+        variant="body2"
+        color="textSecondary"
+        display="block"
+      >
+        {{subheader}}
+      </mui-typography>
+    </block>
+    <slot wx:else name="subheader" />
+  </view>
+  <view class="card-header-action">
+    <mui-button
+      wx:if="{{action}}"
+      shape="circle"
+      color="inherit"
+      icon="{{action.icon}}"
+      iconSize="{{action.iconSize || 24}}"
+      iconColor="{{action.iconColor}}"
+      mStyle="{{action.style}}"
+      mClass="{{action.class}}"
+      bindtap="_headerActionClick"
+    />
+    <slot wx:else name="action" />
+  </view>
+</view>

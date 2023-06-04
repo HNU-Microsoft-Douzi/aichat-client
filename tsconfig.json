@@ -1,30 +1,35 @@
 {
-  "compilerOptions": {
-    "strictNullChecks": true,
-    "noImplicitAny": true,
-    "module": "CommonJS",
-    "target": "ES2020",
-    "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
-    "experimentalDecorators": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "alwaysStrict": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "strict": true,
-    "strictPropertyInitialization": true,
-    "lib": ["ES2020"],
-    "typeRoots": [
-      "./typings"
+    "compilerOptions": {
+        "strictNullChecks": true,
+        "noImplicitAny": true,
+        "module": "CommonJS",
+        "target": "ES2020",
+        "allowJs": true,
+        "allowSyntheticDefaultImports": true,
+        "esModuleInterop": true,
+        "experimentalDecorators": true,
+        "noImplicitThis": true,
+        "noImplicitReturns": true,
+        "alwaysStrict": true,
+        "noFallthroughCasesInSwitch": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strict": true,
+        "strictPropertyInitialization": true,
+        "baseUrl": ".",
+        "types": ["miniprogram-api-typings"],
+        "paths": {
+            "@vant/weapp/*": ["path/to/node_modules/@vant/weapp/dist/*"]
+        },
+        "lib": ["ES2020", "ES6"],
+        "typeRoots": [
+            "./typings"
+        ]
+    },
+    "include": [
+        "./**/*.ts", "miniprogram/pages/index/index.js"
+, "miniprogram/utils/tts-storage-util.ts"    ],
+    "exclude": [
+        "node_modules"
     ]
-  },
-  "include": [
-    "./**/*.ts"
-, "miniprogram/pages/index/index.js"  ],
-  "exclude": [
-    "node_modules"
-  ]
 }

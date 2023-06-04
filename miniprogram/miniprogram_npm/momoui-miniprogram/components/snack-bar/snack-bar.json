@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "mui-snack-bar-content": "../snack-bar-content/snack-bar-content"
+  }
+}

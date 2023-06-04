@@ -1,0 +1,94 @@
+@import './theme.wxss';
+.mui-ripple-base {
+  display: inline-flex;
+  position: relative;
+  cursor: pointer;
+}
+.mui-ripple-container {
+  position: absolute;
+  overflow: hidden;
+  pointer-events: none;
+  top: 0;
+  left: 0;
+}
+.mui-ripple {
+  display: inline-block;
+  position: absolute;
+  opacity: 0;
+  border-radius: 50%;
+  background-color: #000000;
+}
+.mui-ripple.ripple-tap {
+  animation: rippleTap 800ms ease;
+  animation-fill-mode: forwards;
+}
+.mui-ripple.ripple-longpress {
+  animation: rippleLongpress 600ms ease;
+  animation-fill-mode: forwards;
+}
+.mui-ripple.ripple-end {
+  animation: rippleEnd 200ms ease;
+  animation-fill-mode: forwards;
+}
+@keyframes rippleTap {
+  from {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  to {
+    transform: scale(2.83);
+    opacity: 0;
+  }
+}
+@keyframes rippleLongpress {
+  from {
+    transform: scale(0);
+    opacity: 0.3;
+  }
+  to {
+    transform: scale(2.83);
+    opacity: 0.3;
+  }
+}
+@keyframes rippleEnd {
+  from {
+    transform: scale(2.83);
+    opacity: 0.3;
+  }
+  to {
+    transform: scale(2.83);
+    opacity: 0;
+  }
+}
+.mui-variant-text.mui-color-primary .mui-ripple,
+.mui-variant-outlined.mui-color-primary .mui-ripple {
+  background-color: #90caf9;
+}
+.mui-variant-text.mui-color-secondary .mui-ripple,
+.mui-variant-outlined.mui-color-secondary .mui-ripple {
+  background-color: #f48fb1;
+}
+.mui-variant-contained.mui-color-primary .mui-ripple,
+.mui-chip.mui-variant-default.mui-color-primary .mui-ripple,
+.mui-variant-contained.mui-color-secondary .mui-ripple,
+.mui-chip.mui-variant-default.mui-color-secondary .mui-ripple {
+  background-color: #ffffff;
+}
+[data-momoui-theme=dark] .mui-ripple {
+  background-color: #ffffff;
+}
+[data-momoui-theme=dark] .mui-variant-text.mui-color-primary .mui-ripple,
+[data-momoui-theme=dark] .mui-variant-outlined.mui-color-primary .mui-ripple {
+  background-color: #90caf9;
+}
+[data-momoui-theme=dark] .mui-variant-text.mui-color-secondary .mui-ripple,
+[data-momoui-theme=dark] .mui-variant-outlined.mui-color-secondary .mui-ripple {
+  background-color: #f48fb1;
+}
+[data-momoui-theme=dark] .mui-variant-contained .mui-ripple,
+[data-momoui-theme=dark] .mui-chip.mui-variant-default .mui-ripple {
+  background-color: #000000;
+}
+[data-momoui-theme=dark] .mui-chip.mui-variant-default.mui-color-default .mui-ripple {
+  background-color: #ffffff;
+}

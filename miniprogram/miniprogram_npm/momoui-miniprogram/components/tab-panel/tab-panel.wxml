@@ -1,0 +1,8 @@
+<view
+  class="mui mui-tab-panel {{mClass}}"
+  style="{{mStyle}}"
+>
+  <mui-typography>
+    <slot />
+  </mui-typography>
+</view>
