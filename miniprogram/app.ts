@@ -39,7 +39,7 @@ App<IAppOption>({
                         database.collection(app.globalData.user_limit_table_name).add({
                             // data 字段表示需新增的 JSON 数据
                             data: {
-                                conversation_remaining_usage_count: 60, // 初始化用户使用次数为60
+                                conversation_remaining_usage_count: 80, // 初始化用户使用次数为80
                                 create: new Date()
                             }
                         })
