@@ -165,41 +165,54 @@ Component({
         },
 
         onConfirm() {
+            const that = this
             if (this.data.exchangeCodeInputValue) {
                 const cdKeyCode = this.data.exchangeCodeInputValue;
-                const db = getApp().globalData.db
-                const cdkeyCollection = db.collection('CDKEY')
-                const that = this;
-                cdkeyCollection.where({
-                    cdkey: cdKeyCode
-                }).get().then(res => {
-                    if (res === undefined || res.data[0] === undefined) {
-                        wx.showToast({
-                            title: '兑换码错误',
-                            icon: 'error',
-                            duration: 2000,
-                        });
-                        return;
-                    }
-                    const doc = res.data[0]
-                    console.info(`data: ${JSON.stringify(doc)}`)
-                    const remainNum = doc.num;
-                    const consumeState = doc.consume_state;
-                    if (consumeState) {
-                        // 兑换码已经被使用
-                        wx.showToast({
-                            title: '兑换码无效',
-                            icon: 'error',
-                            duration: 2000,
-                        });
-                    } else {
-                        // TODO, 给用户增加使用次数
-                        that.updateUserUsageCount((userUsageNum) => {
-                            console.log(`兑换码核销成功`)
-                            cdkeyCollection.where({ cdkey: cdKeyCode }).update({ data: { consume_state: true, open_id: getApp().globalData.openId } })
-                            wx.showToast({ title: '兑换成功', icon: 'success', duration: 2000, });
-                            that.data.restUsageNum = userUsageNum;
-                        }, remainNum);
+                wx.cloud.callFunction({
+                    // 云函数名称
+                    name: 'exchangeCode',
+                    data: {
+                        cdKeyCode: cdKeyCode
+                    },
+                    success: function (res) {
+                        if (res !== undefined && res.result !== undefined) {
+                            const code = res.result.code
+                            const message = res.result.message
+                            console.info(`sidebar: result: ${JSON.stringify(res.result)} code: ${code} message: ${message}`)
+                            that.setData({
+                                exchangeCodeInputValue: ""
+                            })
+                            if (code === 0) {
+                                wx.showToast({ title: '兑换成功', icon: 'success', duration: 2000, });
+                            } else if (code === 300001) {
+                                wx.showToast({
+                                    title: '兑换码错误',
+                                    icon: 'error',
+                                    duration: 2000,
+                                });
+                            } else if (code === 300002) {
+                                wx.showToast({
+                                    title: '兑换码已被使用',
+                                    icon: 'error',
+                                    duration: 2000,
+                                });
+                            } else if (code === 300003) {
+                                wx.showToast({
+                                    title: '请联系管理员',
+                                    icon: 'error',
+                                    duration: 2000,
+                                });
+                            } else {
+                                wx.showToast({
+                                    title: '请联系管理员',
+                                    icon: 'error',
+                                    duration: 2000,
+                                });
+                            }
+                        }
+                    },
+                    fail: function(error) {
+                        console.info(`sidebar ${error}`)
                     }
                 });
                 this.hidePopup();
