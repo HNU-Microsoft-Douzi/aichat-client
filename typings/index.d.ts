@@ -7,7 +7,8 @@ interface IAppOption {
         db: DB.Database | null
         inviteCode: string | null,
         share_table_name: string,
-        user_limit_table_name: string
+        user_limit_table_name: string,
+        usageCount: number
     }
     userInfoReadyCallback?: WechatMiniprogram.GetUserInfoSuccessCallback
 }

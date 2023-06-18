@@ -1,9 +1,11 @@
 // pages/chat/chat.ts
 
-import { VoiceRecordManage } from "../../utils/record-manage"
+import { getUsageCount, VoiceRecordManage } from "../../utils/record-manage"
 
 const textContainerPaddingBottomSize = 20
 const textContainerPaddingBottomUpWithKeyboard = 5
+
+var log = require('../../utils/log.js')
 
 // TODO, 用户发音后，能否对用户的发音进行评分和校准？
 Page({
@@ -38,30 +40,28 @@ Page({
      * 长按事件
      */
     pressLongVoiceButton: function (e: { touches: { clientX: number, clientY: number }[] }) {
-        console.info("pressLongVoiceButton" + e.touches[0].clientY)
+        log.info("pressLongVoiceButton" + e.touches[0].clientY)
 
         wx.vibrateShort({ type: "medium" })
         this.data.startPoint = e.touches[0]; // 记录长按时开始点信息，后面用于计算上划取消时手指滑动的距离。
         const vR: VoiceRecordManage = this.data.voiceRecorder;
         if (vR) {
-            vR.getUsageCount().then(userUsageCount => {
-                if (userUsageCount > 0) {
-                    this.startPlayWaveAnim()
-                    vR.stopAudioPlay()
-                    vR.startRecord();
-                } else {
-                    wx.showToast({
-                        title: '剩余次数不足，请使用兑换码兑换',
-                        icon: 'error',
-                        duration: 2000
-                    });
-                }
-            })
+            const userUsageCount = getApp().globalData.usageCount;
+            if (userUsageCount > 0) {
+                vR.stopAudioPlay()
+                vR.startRecord();
+            } else {
+                wx.showToast({
+                    title: '剩余次数不足，请使用兑换码兑换',
+                    icon: 'error',
+                    duration: 2000
+                });
+            }
         }
     },
 
     onTouchStart() {
-        console.info("onTouchStart")
+        log.info("onTouchStart")
         this.setData({
             hideLongPressText: true
         })
@@ -70,7 +70,7 @@ Page({
     onTouchMoved: function (e: { touches: { clientX: number, clientY: number }[] }) {  // TODO, weszhang, 这里不知道为什么暂时没用
         var x = e.touches[0].clientX;
         var y = e.touches[0].clientY;
-        console.info(`x: ${x}, y: ${y}`)
+        // log.info(`x: ${x}, y: ${y}`)
         this.data.rippleStyle = 'top:' + y + 'px;left:' + x + 'px;animation: ripple 0.5s linear;'
         this.setData({
             rippleStyle: ''
@@ -78,7 +78,7 @@ Page({
         //touchmove时触发
         const vr: any = this.data.voiceRecorder;
         const distance = Math.sqrt(Math.pow(x - this.data.longPressButtonParams.centerX, 2) + Math.pow(y - this.data.longPressButtonParams.centerY, 2));
-        console.info(`distance: ${distance}`)
+        // log.info(`distance: ${distance}`)
         if (vr) {
             const curveChild: any = this.data.curveAniComponent;
             const buttonWaveChild: any = this.data.buttonWaveAniComponent;
@@ -105,11 +105,11 @@ Page({
     },
 
     onTouchEnd: function () {
-        console.log('onTouchEnd, stop recordManager')
+        log.info('onTouchEnd, stop recordManager')
         // wx.hideToast()
         const vr: VoiceRecordManage = this.data.voiceRecorder
         if (vr) {
-            console.info(`onTouchEnd stopRecord`)
+            log.info(`onTouchEnd stopRecord`)
             vr.stopRecord()
         }
         this.showAiTextView();
@@ -130,11 +130,10 @@ Page({
      * 生命周期函数--监听页面加载
      */
     onLoad() {
-        console.log("onLoad")
         const page = this
         const vR = new VoiceRecordManage(({
             onError(errorMsg: string) {
-                console.error(errorMsg)
+                log.error(errorMsg)
                 page.showAiTextView()
                 // 关闭录音动画
                 page.setData({
@@ -144,21 +143,26 @@ Page({
                 child.pause()
             },
             onStart() {
-
+                log.info(`record start`)
+                page.startPlayWaveAnim()
             },
             onEnd() {
-                page.showAiTextView()
+                log.info(`record end`)
+                getApp().globalData.usageCount = getApp().globalData.usageCount - 1;
+                page.showAiTextView();
                 page.setData({
                     hideVoiceCurveLine: true
 
-                })
+                });
                 // 关闭录音动画
                 const child = page.selectComponent('#curve-wave-view');
                 child.pause()
             }
         }), ({
             onError(errorMsg: string) {
-                page.setSentences(['抱歉，你的网络好像不太好'])
+                log.error(errorMsg)
+
+                page.setSentences(['抱歉，你的网络好像不太好'], [""])
                 page.showAiTextView()
                 page.setData({
                     hideLoaddingDialog: true,
@@ -174,8 +178,8 @@ Page({
                 })
             },
             onGetWholeTextArray(sentences: [string], urls: [string]) {
-                console.info("sentences:" + sentences)
-                console.info(sentences)
+                log.info("sentences:" + sentences)
+                log.info(sentences)
                 page.setSentences(sentences, urls)
                 page.showAiTextView()
                 page.setData({
@@ -185,8 +189,18 @@ Page({
                 });
             },
             onTraverseIndex(index: number) {
-                console.info("onTraverseIndex: " + index)
+                log.info("onTraverseIndex: " + index)
                 page.highlightSentence(index)
+            },
+            startDownloadTtsSentence() {
+                console.info(`startDownloadTtsSentence`)
+                const textgroup = page.selectComponent('#ai-text-group');
+                textgroup.startLoadProgress();
+            },
+            endDownloadTtsSentence() {
+                console.info(`endDownloadTtsSentence`)
+                const textgroup = page.selectComponent('#ai-text-group');
+                textgroup.stopLoadProgress();
             }
         }))
         this.data.voiceRecorder = vR;
@@ -209,22 +223,25 @@ Page({
             subQuery.select('.chat-button').boundingClientRect()
             subQuery.selectViewport().scrollOffset()
             subQuery.exec(function (rect) {
-                console.info(`按钮top: ${rect[0].top}`)
+                log.info(`按钮top: ${rect[0].top}`)
                 const voiceButtonTop = rect[0].top
-                console.log(rect)
                 page.data.longPressButtonParams.centerX = rect[0].left + rect[0].width / 2;
                 page.data.longPressButtonParams.centerY = voiceButtonTop + rect[0].height / 2;
                 page.data.longPressButtonParams.radius = rect[0].width / 2
-                console.info(`底部长按按钮参数: centerX ${page.data.longPressButtonParams.centerX} centerY ${page.data.longPressButtonParams.centerY} radius ${page.data.longPressButtonParams.radius}`)
+                log.info(`底部长按按钮参数: centerX ${page.data.longPressButtonParams.centerX} centerY ${page.data.longPressButtonParams.centerY} radius ${page.data.longPressButtonParams.radius}`)
             });
         }, 500)
+
+        getUsageCount().then(userUsageCount => {
+            getApp().globalData.usageCount = userUsageCount
+        })
     },
 
     /**
      * 生命周期函数--监听页面显示
      */
     onShow() {
-        
+
     },
 
     /**
@@ -266,15 +283,15 @@ Page({
         }).get().then(res => {
             // res.data 包含该记录的数据
             const inviteCode = res.data[0].inviate_code
-            console.log(`查询记录成功， 用户邀请码为: ${inviteCode}`)
+            log.info(`查询记录成功， 用户邀请码为: ${inviteCode}`)
             path += `?inviteCode=${inviteCode}`
         }, err => {
-            console.error(`onShareAppMessage 获取用户邀请码失败`, err)
-            console.error(err)
+            log.error(`onShareAppMessage 获取用户邀请码失败`, err)
+            log.error(err)
         });
         if (args.sharefrom === 'button') {
             //来自页面内转发按钮
-            console.log(args.target)
+            log.info(args.target)
         }
         return {
             title: title,
@@ -342,12 +359,12 @@ Page({
     },
 
     aiImageViewClickEvent: function () {
-        console.info('aiImageViewClickEvent')
+        log.info('aiImageViewClickEvent')
         this.reverseAiTextViewShowState()
     },
 
     startPlayWaveAnim: function () {
-        console.info(`startPlayCurveWaveAnim`)
+        log.info(`startPlayCurveWaveAnim`)
         this.setData({
             hideVoiceCurveLine: false,
             hideButtonWave: false,

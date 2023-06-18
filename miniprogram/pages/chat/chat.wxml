@@ -4,7 +4,7 @@
     <text-group class="ai-content" id="ai-text-group"></text-group>
     <image class="ai-image" style="background-color: #000000;" mode="widthFix" src="../../images/girl.jpg" bindtap="aiImageViewClickEvent"></image>
     <view class="curve-anim-container" style="position:relative; z-index: 5;" hidden="{{hideVoiceCurveLine}}">
-        <curve-wave id="curve-wave-view" hidden="{{hideVoiceCurveLine}}"></curve-wave>
+        <curve-wave id="curve-wave-view"></curve-wave>
     </view>
     <view class='menu-button' hover-class="menu-button-active" bindtap="clickMenuButton">
         <image src="https://www.yubanstar.top/pic?filename=setting.png" style="width: 32px; height: 32px;"/>

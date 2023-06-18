@@ -48,7 +48,7 @@ Component({
      */
     methods: {
         setActivateState(result: boolean) {
-            console.log(`setActivateState: ${result} ${this.data.classStyle}`)
+            // console.log(`setActivateState: ${result} ${this.data.classStyle}`)
             if (result == true && this.data.classStyle !== shineButtonConst[1]) {
                 console.log(`setActivate classStyle: ${shineButtonConst[1]}`)
                 this.setData({

@@ -1,3 +1,5 @@
+import { getUsageCount } from "../../utils/record-manage";
+
 // components/sidebar.ts
 Component({
     /**
@@ -99,6 +101,9 @@ Component({
                         })
                         wx.showToast({ title: '签到成功', icon: 'success', duration: 2000, });
                     }, random)
+                    getUsageCount().then(userUsageCount => {
+                        getApp().globalData.usageCount = userUsageCount
+                    })
                 },
                 fail: function (err) {
                     console.error(err)
@@ -135,16 +140,11 @@ Component({
             if (this.data.side.newopen === false) {
                 return
             }
-            const that = this;
-            const app = getApp()
-            const db = app.globalData.db;
-            db.collection('user_rate_limit').where({
-                _openid: app.globalData.openId
-            }).get().then(response => {
-                that.setData({
-                    restUsageNum: response.data[0].conversation_remaining_usage_count
+            getUsageCount().then(num => {
+                this.setData({
+                    restUsageNum: num
                 })
-            });
+            })
             this.setData({ 'side.newopen': false, isExchangePopupVisible: false });
         },
 
@@ -181,6 +181,9 @@ Component({
                             console.info(`sidebar: result: ${JSON.stringify(res.result)} code: ${code} message: ${message}`)
                             that.setData({
                                 exchangeCodeInputValue: ""
+                            })
+                            getUsageCount().then(userUsageCount => {
+                                getApp().globalData.usageCount = userUsageCount
                             })
                             if (code === 0) {
                                 wx.showToast({ title: '兑换成功', icon: 'success', duration: 2000, });

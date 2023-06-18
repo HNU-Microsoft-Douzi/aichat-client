@@ -1,3 +1,4 @@
+var log = require('./log.js')
 
 export const MODEULE_KEY = {
     LANGUAGE : 'language',
@@ -6,6 +7,7 @@ export const MODEULE_KEY = {
 }
 
 export function setStorage(key: string, value: any) {
+    log.info(`setStorage: key - ${key} value: ${value}`)
     try {
         wx.setStorageSync(key, value);
     } catch (e) {
@@ -14,6 +16,7 @@ export function setStorage(key: string, value: any) {
 }
 
 export function getStroage(key: string) {
+    log.info(`getStroage: key - ${key}`)
     try {
         var value = wx.getStorageSync(key)
         if (value) {

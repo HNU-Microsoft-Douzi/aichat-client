@@ -1,4 +1,5 @@
-import { setStorage, MODEULE_KEY } from "../../utils/storage-util"
+import { getMode, getSpeed } from "../../utils/tts-storage-util"
+import { setStorage, MODEULE_KEY, getStroage } from "../../utils/storage-util"
 
 // components/audio-setting-popup/audio-setting-pop.ts
 Component({
@@ -24,39 +25,11 @@ Component({
      */
     methods: {
         loadCache() {
-            try {
-                var value = wx.getStorageSync('language')
-                if (value) {
-                  this.setData({
-                      radio: value
-                  })
-                }
-              } catch (e) {
-                // Do something when catch error
-                console.error(e)
-              }
-              try {
-                var value = wx.getStorageSync('ttsEngine')
-                if (value) {
-                  this.setData({
-                      radioSecond: value
-                  })
-                }
-              } catch (e) {
-                // Do something when catch error
-                console.error(e)
-              }
-              try {
-                var value = wx.getStorageSync('audioSpeed')
-                if (value) {
-                  this.setData({
-                    currentValue: value * 100
-                  })
-                }
-              } catch (e) {
-                // Do something when catch error
-                console.error(e)
-              }
+              this.setData({
+                currentValue: getSpeed() * 100,
+                radioSecond: getMode().toString(),
+                radio: getStroage(MODEULE_KEY.LANGUAGE)
+              })
         },
         onLoad() {
             this.loadCache();

@@ -3,7 +3,7 @@
     "projectname": "aichat-client",
     "setting": {
         "compileHotReLoad": true,
-        "urlCheck": false,
+        "urlCheck": true,
         "autoAudits": true,
         "preloadBackgroundData": false,
         "bigPackageSizeSupport": true

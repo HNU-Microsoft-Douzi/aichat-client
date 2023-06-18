@@ -5,7 +5,7 @@ export function getSpeed() {
     if (value) {
         return value;
     }
-    return 60;
+    return 1;
 }
 
 export function getMode() {
@@ -15,12 +15,13 @@ export function getMode() {
     } else if (mode === '2') {
         return 1;
     }
-    return 0;
+    return 1;
 }
 
 /**
  * 对应微软的语言模型
  */
+
 export function getLanguage() {
     const language = getStroage(MODEULE_KEY.LANGUAGE);
     if (language === '1') { // 英文
@@ -30,7 +31,7 @@ export function getLanguage() {
     } else if (language === '3') { // 中文简体
         return 'zh-CN';
     }
-    return 'zh-CN';
+    return 'en-GB';
 }
 
 /**
@@ -99,8 +100,8 @@ export function getVcn() {
         }
     }
     if (mode === 0) { // 讯飞
-        return 'xiaoyan';
+        return 'x2_engam_laura';
     } else {
-        return 'XiaochenNeural'
+        return 'AbbiNeural'
     }
 }

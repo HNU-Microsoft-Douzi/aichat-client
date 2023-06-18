@@ -10,21 +10,29 @@ Component({
         }
     },
     data: {
+        showProgess: false,
         showTextGroup: false,
         sentences: [],
         audioFileNames: [],
         current_index: -1,
         translation: "",
         showTranslateView: false,
-        marginTop: '-50px'
+        marginTop: '-50px',
+        percentage: 8,
+        timerId: -1,
+        timerStarted: false,
+        loaddingSuccess: false
     },
     methods: {
         // TODO, weszhang, 注意，这里在播报的时候的点击行为如何兼容？
         onTap: function (event: any) {
+            const that = this;
             const index = event.currentTarget.dataset.index;
             console.log('text-view with index', index, 'is tapped');
             this.setData({
-                current_index: index
+                current_index: index,
+                loaddingSuccess: false,
+                showTranslateView: true
             })
             const sentence = this.data.sentences[index]
             // TODO, show loading
@@ -33,8 +41,8 @@ Component({
                     // TODO, 隐藏loadding
                     const translation = res as string
                     this.setData({
-                        showTranslateView: true,
-                        translation: translation
+                        translation: translation,
+                        loaddingSuccess: true
                     })
                 }
                 // 加载结束
@@ -42,32 +50,62 @@ Component({
                 // TODO, 隐藏loadding
                 // TODO, 展示失败结果，让用户进行重试
             })
-            // const that = this;
-            // TODO, weszhang, 我觉得语法树的呈现这里暂时还没有想的特别清楚，先暂时不要上线了
-            // const callback = {
-            //     onStart: () => {
-            //       console.log('请求开始');
-            //     },
-            //     onSuccess: (response) => {
-            //         const translation = response['translation']
-            //         const keyWords = response['key words']
-            //         var formatVocabularies = ""
-            //         for (const word of keyWords) {
-            //             console.info(`words: ${JSON.stringify(word)}`)
-            //             formatVocabularies = formatVocabularies + that.formatVocabulary(word) + "\n"
-            //         }
-            //         const child = that.selectComponent('#grammer-tree');
-            //         child.setContent(translation, "", formatVocabularies);
-            //         child.hideIndicatorView(1);
-            //         child.showComponent();
-            //     //   console.log(`请求成功，响应数据为：${response.data}`);
-            //     },
-            //     onFail: () => {
-            //       console.log('请求失败');
-            //     }
-            //   };
-            // getGrammerTreeJson(this.data.sentences[index], callback)
-            playAudio(this.data.audioFileNames[index], this.data.sentences[index])
+            playAudio(this.data.audioFileNames[index], this.data.sentences[index], ({
+                onError(errorMsg) {
+
+                },
+                onStartDownload() {
+                    that.startLoadProgress();
+                },
+                onSuccess() {
+                    that.stopLoadProgress();
+                }
+            }))
+        },
+        startLoadProgress() {
+            console.info(`startLoadProgress`)
+            // 启动一个倒计时，1s后开始展示loadding进度条，并且每秒增加5%
+            // 如果计时器已经启动，说明上一个item还没加载完，就加载下一个item，那么这里需要重新加载
+            if (this.data.timerStarted) {
+                this.stopTimer();
+            }
+
+            // 在0.5秒后启动计时器
+            this.data.timerId = setTimeout(() => {
+                this.data.timerStarted = true;
+                this.startTimer();
+            }, 500);
+            // this.setData({
+            //     showProgess: true
+            // });
+        },
+        stopLoadProgress() {
+            console.info(`stopLoadProgress`)
+            // 如果loadding已经在展示了，那么将loadding冲到100%，300ms后关闭loadding
+            this.setData({
+                percentage: 100
+            })
+            setTimeout(() => {
+                this.stopTimer();
+                this.setData({
+                    showProgess: false
+                });
+            }, 300)
+        },
+        startTimer() {
+            console.info(`startTimer`)
+            const that = this;
+            this.data.timerId = setInterval(() => {
+                console.info(`update process percentage`)
+                that.setData({
+                    percentage: Math.min(that.data.percentage + 5, 100)
+                })
+            }, 500);
+        },
+        stopTimer() {
+            console.info(`stopTimer`)
+            clearInterval(this.data.timerId);
+            this.data.timerId = -1;
         },
         formatVocabulary(vocabulary) {
             let text = `Name: ${vocabulary.name}\n`;
@@ -94,7 +132,8 @@ Component({
             if (this.data.sentences.length !== 0) {
                 this.setData({
                     showTextGroup: true,
-                    showTranslateView: false
+                    showTranslateView: false,
+                    percentage: 0
                 })
             }
         },
@@ -108,9 +147,13 @@ Component({
         reverseAiTextViewShowState: function () {
             if (this.data.sentences.length !== 0) {
                 this.setData({
-                    showTextGroup: !this.data.showTextGroup,
-                    showTranslateView: !this.data.showTextGroup
+                    showTextGroup: !this.data.showTextGroup
                 })
+                if (this.data.translation !== "") {
+                    this.setData({
+                        showTranslateView: !this.data.showTranslateView
+                    })
+                }
             } else {
                 this.hide()
             }
