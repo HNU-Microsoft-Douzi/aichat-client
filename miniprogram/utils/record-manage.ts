@@ -1,8 +1,9 @@
 import { getLanguage, getVcn, getMode, getSpeed } from "./tts-storage-util"
 var log = require('./log.js')
 
-
 var startTap = false;
+
+let talkHistory: string = '';
 export class VoiceRecordManage {
     private recordManager: WechatMiniprogram.RecorderManager
     private recoderAuthStatus: boolean //录音授权状态
@@ -12,6 +13,7 @@ export class VoiceRecordManage {
     private conversationRemainingUsageCount: number
     constructor(callback: VoiceRecordManageCallback, ttsCallback: TtsDownloadManageCallback) {
         log.info("VoiceRecordManage init")
+        this.setTalkHistory();
         this.recordManager = wx.getRecorderManager();
         this.recoderAuthStatus = false
         this.banSendMsg = false
@@ -164,14 +166,13 @@ export class VoiceRecordManage {
         log.info("sendUserVoiceToService: path - ", path)
         const that = this;
         ttsCallback.onStartDownload();
-        // TODO, weszhang，口音选择做成配置化
         const origin = getLanguage();
         const personName = getVcn();
         const mode = getMode();
         const speed = getSpeed();
-        log.info(`origin: ${origin} personName: ${personName} mode: ${mode}`)
+        log.info(`origin: ${origin} personName: ${personName} mode: ${mode} talkHistory: ${talkHistory}`)
         wx.uploadFile({
-            url: `https://www.yubanstar.top/voice?openId=${getApp().globalData.openId}&origin=${origin}&personName=${personName}&mode=${mode}&speed=${speed}`,
+            url: `https://www.yubanstar.top/voice?openId=${getApp().globalData.openId}&origin=${origin}&history=${talkHistory}&personName=${personName}&mode=${mode}&speed=${speed}`,
             filePath: path,
             name: 'file',
             timeout: 30000,
@@ -182,6 +183,7 @@ export class VoiceRecordManage {
                     ttsCallback.onError('Internal Server Error')
                     return;
                 }
+                that.setTalkHistory();
                 startTap = false;
                 const { user, result } = JSON.parse(res.data);
                 log.info(`user: ${user} result:` + JSON.stringify(result));
@@ -221,6 +223,19 @@ export class VoiceRecordManage {
             }
         });
     }
+    setTalkHistory() {
+        wx.cloud.callFunction({
+            // 云函数名称
+            name: 'getUserTalkHistory',
+            success: function (res) {
+                const result = res.result;
+                const data = result?.data;
+                talkHistory = JSON.stringify(data);
+                console.info(`getTalkHistory: ${talkHistory}`)
+            },
+            fail: console.error
+        })
+    }
 
     /**
      * 数据上报
@@ -234,7 +249,7 @@ export class VoiceRecordManage {
             data: {
                 userText: user,
                 serverResponseText: response
-            }, 
+            },
             success: function (res) {
                 console.info(`report user data success`)
             },
@@ -371,7 +386,7 @@ export async function getUsageCount() {
         return response.data[0].conversation_remaining_usage_count;
     } else {
         return 0;
-    } 
+    }
 }
 
 
