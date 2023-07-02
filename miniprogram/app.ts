@@ -9,7 +9,7 @@ App<IAppOption>({
         partner_name: 'partner',
         user_setting: 'user_setting',
         usageCount: 0,
-        default_partner_id: '81f60125649eeaf600da8e771e89d3f5',
+        default_partner_id: '81f6012564a16684015484eb0e9af674',
         user_setting_data: {},
     },
     onLaunch() {

@@ -6,7 +6,9 @@
     "button-wave": "/components/button-wave/buttonWave",
     "text-group": "/components/textgroup/textgroup",
     "sidebar" : "/components/sidebar/sidebar",
-    "grammer-tree-group" : "/components/grammer-tree-group/grammerTreeGroup"
+    "grammer-tree-group" : "/components/grammer-tree-group/grammerTreeGroup",
+    "voice-input": "../../components/input/input",
+    "t-loading": "../../miniprogram_npm/tdesign-miniprogram/loading/loading"
   },
   
   "disableScroll": true,

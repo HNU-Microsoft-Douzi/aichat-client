@@ -3,10 +3,17 @@ Component({
     data: {
         mode: 'text',
         isPressing: false,
-        loadding: false,
-        inputValue: ''
+        loading: false,
+        inputValue: '',
+        autosize: {
+            maxHeight: 80,
+            minHeight: 20,
+          },
     },
     methods: {
+        onLineChange(e) {
+            console.log('lineCount: ', e.detail);
+          },
         changeMode() {
             if (this.data.mode === 'voice') {
                 this.setData({
@@ -18,26 +25,41 @@ Component({
                 })
             }
         },
+        setLoadingState(loading: boolean) {
+            console.info(`setLoadingState loading: ${loading}`)
+            this.setData({
+                loading: loading
+            })
+            if (!loading) {
+                this.setData({
+                    isPressing: false
+                })
+            }
+        },
         longPressed() {
             console.info(`longPressed`)
             this.setData({
                 isPressing: true
             })
+            this.triggerEvent('longPressed', {}, {})
         },
         onTouchEnd: function () {
-            this.setData({
-                isPressing: false
-            })
+            this.triggerEvent('onTouchEnd', {}, {})
         },
-        confirm: function () {
-            console.log(this.data.inputValue);
-            this.setData({
-                inputValue: ''
-            });
-        },
-        bindInput: function (e) {
+        onChange: function(e) {
+            console.info(`value: ${JSON.stringify(e.detail.value)}`)
             this.setData({
                 inputValue: e.detail.value
+            });
+        },
+        confirm: function () {
+            console.info(this.data.inputValue)
+            if (this.data.inputValue === '') {
+                return;
+            }
+            this.triggerEvent('confirm', { inputValue: this.data.inputValue }, {})
+            this.setData({
+                inputValue: ''
             });
         }
     }

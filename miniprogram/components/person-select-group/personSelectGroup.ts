@@ -13,7 +13,7 @@ Component({
      */
     data: {
         visible: false,
-        selectedPersonId: '81f60125649eeaf600da8e771e89d3f5', // 默认选择莉莉的id
+        selectedPersonId: '81f6012564a16684015484eb0e9af674', // 默认选择莉莉的id
         screenWidth: 0,
         personList: [
             // 更多数据...

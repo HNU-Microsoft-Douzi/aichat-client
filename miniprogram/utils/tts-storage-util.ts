@@ -27,11 +27,10 @@ export function getLanguage() {
  */
 export function getVcn() {
     let vcn = 'AbbiNeural';
-    const language = getLanguage();
     if (getApp().globalData.user_setting_data.vcn) {
         vcn = getApp().globalData.user_setting_data.vcn;
     }
-    return `${language}-${vcn}`;
+    return `${vcn}`;
 }
 
 export function getPrompt() {

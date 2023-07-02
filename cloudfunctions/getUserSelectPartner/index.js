@@ -17,7 +17,7 @@ async function _getUserPartnerId(openid) {
         return partner_id;
     } else {
         // 使用默认的id
-        return '81f60125649eeaf600da8e771e89d3f5';
+        return '81f6012564a16684015484eb0e9af674';
     }
 }
 

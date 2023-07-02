@@ -3,7 +3,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 48px;
+    height: max-content;
   }
   
   .left, .right {
@@ -27,11 +27,10 @@
   }
 
   .input {
-      height: calc(100% - 8px);
-      border-radius: 90px;
-      margin-left: 8px;
-      margin-right: 8px;
-      margin-top: 4px;
-      padding-left: 10px;
-      border: 1px solid rgba(0, 0, 0, 0.5);
+    border-radius: 90px;
+    margin-left: 8px;
+    margin-right: 8px;
+    padding-left: 10px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+    min-height: 36px;
   }

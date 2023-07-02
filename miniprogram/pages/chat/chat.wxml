@@ -3,27 +3,14 @@
 <view class="above-container">
     <text-group class="ai-content" id="ai-text-group"></text-group>
     <image class="ai-image" style="min-height: 560px;" mode="widthFix" src="{{url}}" bindtap="aiImageViewClickEvent"></image>
-    <view class="curve-anim-container" style="position:relative; z-index: 5;" hidden="{{hideVoiceCurveLine}}">
-        <curve-wave id="curve-wave-view"></curve-wave>
-    </view>
     <view class='menu-button' hover-class="menu-button-active" bindtap="clickMenuButton">
         <image src="https://www.yubanstar.top/pic?filename=setting.png" style="width: 32px; height: 32px;"/>
     </view>
 </view>
-<view class="bottom-container">
-    <view class="voice-container" wx:if="{{inputMode}}">
-        <button :style="rippleStyle" class="chat-button" type="mini" bindtap="clickCircleVoiceButton" bindlongpress='pressLongVoiceButton' longpress-duration="300" hover-class="chat-button-hover-class" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved" wx:if="{{! hideLongPressButton}}">
-            <image src="https://www.yubanstar.top/pic?filename=mac_icon.png" mode="aspectFit" style="transform: scale(130%);width: 32px; height: 32px;"/>
-        </button>
-        <view hidden="{{hideLongPressText}}">
-            <text style="text-align: center; display: flex; justify-content: center; margin-top: 12rpx; font-size: 30rpx; color: #1485EE;">长按说话</text>
-        </view>
-    </view>
-</view>
-<view class="fullscreen" hidden="{{hideVoiceCurveLine && hideLoaddingDialog}}"></view>
+
+<text class="user-text" wx:if="{{userNewSentence !== ''}}">{{userNewSentence}}</text>
+<voice-input class="voice-input" bind:longPressed="onLongPressed" bind:confirm="onConfirm" bind:onTouchEnd="onTouchEnd"/>
 
 <sidebar id="menu-bar"/>
-<loadding style="position: absolute; top: 260px; left: 50%; transform: translateX(-50%);" wx:if="{{!hideLoaddingDialog}}"></loadding>
-<button-wave id="button-wave-view" style="position: absolute; top: 0;left: 0; right: 0; margin-top: 1310rpx;" hidden="{{hideButtonWave}}"></button-wave>
 
 <!-- <grammer-tree-group></grammer-tree-group> -->

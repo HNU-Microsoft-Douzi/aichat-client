@@ -11,35 +11,36 @@ export class VoiceRecordManage {
     private banSendMsg: boolean // 禁止发送消息
     private listener: VoiceRecordManageCallback
     private innerAudioContextList: Array<WechatMiniprogram.InnerAudioContext>
-    private conversationRemainingUsageCount: number
+    private callback: TtsDownloadManageCallback
     constructor(callback: VoiceRecordManageCallback, ttsCallback: TtsDownloadManageCallback) {
         log.info("VoiceRecordManage init")
-        // this.setTalkHistory();
+        const _this = this;
+        this.setTalkHistory();
         this.recordManager = wx.getRecorderManager();
         this.recoderAuthStatus = false
         this.banSendMsg = false
         this.listener = callback
         this.innerAudioContextList = []
-        this.conversationRemainingUsageCount = 0
 
+        this.callback = ttsCallback;
         this.recordManager.onStart(() => {
-            log.info('record start')
+            console.info('record start')
             this.listener.onStart()
         })
         this.recordManager.onPause(() => {
-            log.info('record pause')
+            console.info('record pause')
         })
         this.recordManager.onStop((res: { tempFilePath: string }) => {
             if (this.banSendMsg) {
                 // TODO, weszhang, 这里应该会存储文件，后面需要将文件进行删除
-                log.info("banSendMsg = true")
+                console.info("banSendMsg = true")
                 wx.showToast({ title: '取消发送', icon: 'none', duration: 500, });
                 return
             }
             this.listener.onEnd()
-            log.info('record stop', res)
+            console.info('record stop', res)
             const { tempFilePath } = res
-            this.sendUserVoiceToService(tempFilePath, ttsCallback)
+            this.sendUserVoiceToService(tempFilePath)
         })
         // this.recordManager.onFrameRecorded((res) => {
         //     const { frameBuffer } = res
@@ -70,6 +71,7 @@ export class VoiceRecordManage {
     }
 
     public stopRecord() {
+        console.info(`stopRecord record-manager`)
         this.recordManager.stop()
     }
 
@@ -85,34 +87,36 @@ export class VoiceRecordManage {
     private recordLogic() {
         log.info("recordLogic")
         const that = this;
-        // TODO 这里检查使用次数是不是还够
-        const app = getApp();
-        const db = app.globalData.db;
-        db.collection('user_rate_limit').where({
-            _openid: app.globalData.openId
-        }).get().then(res => {
-            // res.data 包含该记录的数据
-            const currentUsageCount = res.data[0].conversation_remaining_usage_count;
-            log.info(`查询记录成功， 用户剩余使用次数: ${currentUsageCount}`)
-            that.conversationRemainingUsageCount = currentUsageCount;
-            if (currentUsageCount > 0) {
-                this.banSendMsg = false; // 允许发送消息
-                // TODO, 这里的编码采样率的大小可能影响到整个录音文件的大小
-                this.recordManager.start({
-                    duration: 60000,
-                    sampleRate: 16000,
-                    numberOfChannels: 1,
-                    encodeBitRate: 48000,
-                    format: 'mp3',
-                    frameSize: 0.01
-                });
-            } else {
-                // TODO, weszhang， 这里不允许发消息
-                wx.showToast({
-                    title: '剩余次数不足，请使用兑换码兑换',
-                    icon: 'error',
-                    duration: 2000
-                });
+        wx.cloud.callFunction({
+            // 云函数名称
+            name: 'getUserRemainCount',
+            success: function (res) {
+                console.info(`recordLogic res: ${JSON.stringify(res)}`);
+                if (res && res.result) {
+                    const currentUsageCount = res.result.currentUsageCount
+                    if (currentUsageCount > 0) {
+                        that.banSendMsg = false; // 允许发送消息
+                        // TODO, 这里的编码采样率的大小可能影响到整个录音文件的大小
+                        console.info(`real recordLogic`)
+                        that.recordManager.start({
+                            duration: 60000,
+                            sampleRate: 16000,
+                            numberOfChannels: 1,
+                            encodeBitRate: 48000,
+                            format: 'mp3',
+                            frameSize: 0.01
+                        });
+                    } else {
+                        // TODO, weszhang， 这里不允许发消息
+                        wx.showToast({
+                            title: '剩余次数不足，请使用兑换码兑换',
+                            icon: 'error',
+                            duration: 2000
+                        });
+                    }
+                }
+            }, fail(e) {
+                console.error(e);
             }
         });
     }
@@ -159,14 +163,41 @@ export class VoiceRecordManage {
         });
     }
 
+    public sendUserTextToService(text: string) {
+        const _this = this;
+        wx.request({
+            url: 'https://www.yubanstar.top/chat',
+            method: 'POST',
+            data: {
+                openId: getApp().globalData.openId,
+                origin: getLanguage(),
+                personName: getVcn(),
+                mode: getMode(),
+                speed: getSpeed(),
+                vcn: getVcn(),
+                prompt: getPrompt(),
+                style: getStyle(),
+                emotion: getEmotion(),
+                talkHistory: talkHistory,
+                userNewSentence: text
+            },
+            success(res) {
+                _this.handleServerSuccessCallback(res);
+            },
+            fail(err) {
+                _this.handleServerFailCallback(err);
+            }
+        })
+    }
+
     /**
     * 将用户的语音传递给服务端
     * @param path 录音文件的本地路径
     */
-    private sendUserVoiceToService(path: string, ttsCallback: TtsDownloadManageCallback) {
+    private sendUserVoiceToService(path: string) {
         log.info("sendUserVoiceToService: path - ", path)
-        const that = this;
-        ttsCallback.onStartDownload();
+        const _this = this;
+        this.callback.onStartDownload();
         wx.uploadFile({
             url: `https://www.yubanstar.top/voice`,
             filePath: path,
@@ -181,57 +212,70 @@ export class VoiceRecordManage {
                 style: getStyle(),
                 emotion: getEmotion(),
                 talkHistory: talkHistory
-                
             },
             name: 'file',
             timeout: 30000,
             success(res) {
-                log.info(`sendUserVoiceToService response: ${JSON.stringify(res)}`);
-                if (res.statusCode !== 200) {
-                    log.error('后台异常');
-                    ttsCallback.onError('Internal Server Error')
-                    return;
-                }
-                that.setTalkHistory();
-                startTap = false;
-                const { user, result } = JSON.parse(res.data);
-                log.info(`user: ${user} result:` + JSON.stringify(result));
-                let textArray: Array<string> = [];
-                let urlArray: Array<string> = [];
-                let serverResponseText = '';
-                result.forEach((item: { file: string, origin: string }) => {
-                    const fileUrl = item.file;
-                    const responseText = item.origin;
-                    serverResponseText += responseText;
-                    textArray.push(responseText);
-                    urlArray.push(fileUrl);
-                    log.info(`fileUrl: ${fileUrl}  responseText: ${responseText}`);
-                });
-                that.reportData(user, serverResponseText);
-                const db = getApp().globalData.db;
-                db.collection('user_rate_limit').where({
-                    _openid: getApp().globalData.openId
-                }).update({
-                    // data 传入需要局部更新的数据
-                    data: {
-                        // 表示将 done 字段置为 true
-                        conversation_remaining_usage_count: that.conversationRemainingUsageCount - 1
-                    },
-                    success: function (res) {
-                        log.info(`用户使用次数-1`)
-                    }
-                })
-                ttsCallback.onGetWholeTextArray(textArray, urlArray)
-                // TODO, 这里应该封装成一个完整的函数放在chat.js中控制，并由chat.js在调用这个接口前开始展示loadding进度条，在播放完毕后隐藏进度条
-                // 或者可以在ttsCallback增加一个针对单个句子开始下载、下载完毕的回调通知，全部都放在callback里实现
-                that.playNext(0, result, ttsCallback);
+                _this.handleServerSuccessCallback(res);
             },
             fail(err) {
-                log.error(err);
-                ttsCallback.onError(err.errMsg)
+                _this.handleServerFailCallback(err);
             }
         });
     }
+
+    private handleServerSuccessCallback(res) {
+        let data = res.data;
+        console.info(`code: ${res.statusCode} sendUserVoiceToService response: ${data} type: ${typeof data}`);
+        if (res.statusCode !== 200) {
+            log.error('后台异常');
+            this.callback.onError('Internal Server Error')
+            return;
+        }
+        this.setTalkHistory();
+        if (typeof data === 'string') {
+            data = JSON.parse(data);
+        }
+        startTap = false;
+        const user = data.user;
+        const result = data.result;
+        log.info(`user: ${user} result:` + JSON.stringify(result));
+        let textArray: Array<string> = [];
+        let urlArray: Array<string> = [];
+        let serverResponseText = '';
+        result.forEach((item: { file: string, origin: string }) => {
+            const fileUrl = item.file;
+            const responseText = item.origin;
+            serverResponseText += responseText;
+            textArray.push(responseText);
+            urlArray.push(fileUrl);
+            log.info(`fileUrl: ${fileUrl}  responseText: ${responseText}`);
+        });
+        this.reportData(user, serverResponseText);
+        const db = getApp().globalData.db;
+        const _ = db.command;
+        db.collection('user_rate_limit').where({
+            _openid: getApp().globalData.openId
+        }).update({
+            // data 传入需要局部更新的数据
+            data: {
+                conversation_remaining_usage_count: _.inc(-1)
+            },
+            success: function (res) {
+                log.info(`用户使用次数-1`)
+            }
+        })
+        this.callback.onGetWholeTextArray(textArray, urlArray, user)
+        // TODO, 这里应该封装成一个完整的函数放在chat.js中控制，并由chat.js在调用这个接口前开始展示loadding进度条，在播放完毕后隐藏进度条
+        // 或者可以在ttsCallback增加一个针对单个句子开始下载、下载完毕的回调通知，全部都放在callback里实现
+        this.playNext(0, result, this.callback);
+    }
+
+    private handleServerFailCallback(err) {
+        log.error(err);
+        this.callback.onError(err.errMsg)
+    }
+
     setTalkHistory() {
         wx.cloud.callFunction({
             // 云函数名称
@@ -243,7 +287,7 @@ export class VoiceRecordManage {
             success: function (res) {
                 const result = res.result;
                 const data = result?.data;
-                talkHistory = JSON.stringify(data); 
+                talkHistory = JSON.stringify(data);
                 console.info(`getTalkHistory: ${talkHistory}`)
             },
             fail: console.error
@@ -256,6 +300,7 @@ export class VoiceRecordManage {
      * @param response 回复文本
      */
     private reportData(user: string, response: string) {
+        // 空数据也一样存，后台会过滤掉
         wx.cloud.callFunction({
             // 云函数名称
             name: 'userDataReport',
@@ -418,7 +463,7 @@ interface TtsDownloadManageCallback {
         errorMsg: string
     ): void
     onStartDownload(): void
-    onGetWholeTextArray(textArray: Array<string>, textUrl: Array<string>): void
+    onGetWholeTextArray(textArray: Array<string>, textUrl: Array<string>, userText: string): void
     onTraverseIndex(index: number): void,
     startDownloadTtsSentence(): void,
     endDownloadTtsSentence(): void

@@ -55,58 +55,14 @@ Component({
 
                 },
                 onStartDownload() {
-                    that.startLoadProgress();
+                    console.info(`start download tts`);
                 },
                 onSuccess() {
-                    that.stopLoadProgress();
+                    console.info(`download tts success`);
                 }
             }))
         },
-        startLoadProgress() {
-            console.info(`startLoadProgress`)
-            // 启动一个倒计时，1s后开始展示loadding进度条，并且每秒增加5%
-            // 如果计时器已经启动，说明上一个item还没加载完，就加载下一个item，那么这里需要重新加载
-            if (this.data.timerStarted) {
-                this.stopTimer();
-            }
 
-            // 在0.5秒后启动计时器
-            this.data.timerId = setTimeout(() => {
-                this.data.timerStarted = true;
-                this.startTimer();
-            }, 500);
-            // this.setData({
-            //     showProgess: true
-            // });
-        },
-        stopLoadProgress() {
-            console.info(`stopLoadProgress`)
-            // 如果loadding已经在展示了，那么将loadding冲到100%，300ms后关闭loadding
-            this.setData({
-                percentage: 100
-            })
-            setTimeout(() => {
-                this.stopTimer();
-                this.setData({
-                    showProgess: false
-                });
-            }, 300)
-        },
-        startTimer() {
-            console.info(`startTimer`)
-            const that = this;
-            this.data.timerId = setInterval(() => {
-                console.info(`update process percentage`)
-                that.setData({
-                    percentage: Math.min(that.data.percentage + 5, 100)
-                })
-            }, 500);
-        },
-        stopTimer() {
-            console.info(`stopTimer`)
-            clearInterval(this.data.timerId);
-            this.data.timerId = -1;
-        },
         formatVocabulary(vocabulary) {
             let text = `Name: ${vocabulary.name}\n`;
             text += `Part of speech: ${vocabulary["part of speech"]}\n`;
