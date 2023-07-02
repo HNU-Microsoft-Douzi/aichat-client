@@ -1,4 +1,5 @@
 {
   "usingComponents": {
+      "voice-input": "../../components/input/input"
   }
 }

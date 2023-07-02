@@ -1,4 +1,5 @@
-import { getLanguage, getVcn, getMode, getSpeed } from "./tts-storage-util"
+import { getSessionId } from "./session-manager";
+import { getLanguage, getVcn, getMode, getSpeed, getPrompt, getStyle, getEmotion } from "./tts-storage-util"
 var log = require('./log.js')
 
 var startTap = false;
@@ -13,7 +14,7 @@ export class VoiceRecordManage {
     private conversationRemainingUsageCount: number
     constructor(callback: VoiceRecordManageCallback, ttsCallback: TtsDownloadManageCallback) {
         log.info("VoiceRecordManage init")
-        this.setTalkHistory();
+        // this.setTalkHistory();
         this.recordManager = wx.getRecorderManager();
         this.recoderAuthStatus = false
         this.banSendMsg = false
@@ -166,14 +167,22 @@ export class VoiceRecordManage {
         log.info("sendUserVoiceToService: path - ", path)
         const that = this;
         ttsCallback.onStartDownload();
-        const origin = getLanguage();
-        const personName = getVcn();
-        const mode = getMode();
-        const speed = getSpeed();
-        log.info(`origin: ${origin} personName: ${personName} mode: ${mode} talkHistory: ${talkHistory}`)
         wx.uploadFile({
-            url: `https://www.yubanstar.top/voice?openId=${getApp().globalData.openId}&origin=${origin}&history=${talkHistory}&personName=${personName}&mode=${mode}&speed=${speed}`,
+            url: `https://www.yubanstar.top/voice`,
             filePath: path,
+            formData: {
+                openId: getApp().globalData.openId,
+                origin: getLanguage(),
+                personName: getVcn(),
+                mode: getMode(),
+                speed: getSpeed(),
+                vcn: getVcn(),
+                prompt: getPrompt(),
+                style: getStyle(),
+                emotion: getEmotion(),
+                talkHistory: talkHistory
+                
+            },
             name: 'file',
             timeout: 30000,
             success(res) {
@@ -227,10 +236,14 @@ export class VoiceRecordManage {
         wx.cloud.callFunction({
             // 云函数名称
             name: 'getUserTalkHistory',
+            data: {
+                partnerName: getApp().globalData.user_setting_data.name,
+                sessionId: getSessionId()
+            },
             success: function (res) {
                 const result = res.result;
                 const data = result?.data;
-                talkHistory = JSON.stringify(data);
+                talkHistory = JSON.stringify(data); 
                 console.info(`getTalkHistory: ${talkHistory}`)
             },
             fail: console.error
@@ -248,7 +261,9 @@ export class VoiceRecordManage {
             name: 'userDataReport',
             data: {
                 userText: user,
-                serverResponseText: response
+                serverResponseText: response,
+                partnerName: getApp().globalData.user_setting_data.name,
+                sessionId: getSessionId()
             },
             success: function (res) {
                 console.info(`report user data success`)

@@ -10,9 +10,15 @@ const _ = db.command
 exports.main = async (event, context) => {
     const wxContext = cloud.getWXContext()
     const openid = wxContext.OPENID;
+    let {
+        partnerName,
+        sessionId
+    } = event
     try {
         const res = await db.collection('user_talk_history').where({
-            openid: openid
+            openid: openid,
+            partner: partnerName, 
+            sessionId: sessionId,
           })
           .orderBy('time', 'desc')
           .limit(5)

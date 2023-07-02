@@ -2,7 +2,7 @@
 <!-- 注意，这里建议按照小程序的规范给出4个不同的层级出来 -->
 <view class="above-container">
     <text-group class="ai-content" id="ai-text-group"></text-group>
-    <image class="ai-image" style="background-color: #000000;" mode="widthFix" src="../../images/girl.jpg" bindtap="aiImageViewClickEvent"></image>
+    <image class="ai-image" style="min-height: 560px;" mode="widthFix" src="{{url}}" bindtap="aiImageViewClickEvent"></image>
     <view class="curve-anim-container" style="position:relative; z-index: 5;" hidden="{{hideVoiceCurveLine}}">
         <curve-wave id="curve-wave-view"></curve-wave>
     </view>

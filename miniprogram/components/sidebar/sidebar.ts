@@ -236,6 +236,14 @@ Component({
                 'side.newopen': true
             })
         },
+        clickRoleChooseSetting: function() {
+            console.info(`clickRoleChooseSetting`)
+            const roleSelector = this.selectComponent('#role');
+            roleSelector.show()
+            this.setData({
+                'side.newopen': true
+            })
+        },
         onVisibleChange(e) {
             this.setData({
                 qrCodePopVisible: e.detail.visible,

@@ -1,0 +1,15 @@
+<!--components/input/input.wxml-->
+<view class="container">
+    <view class="left">
+        <t-button theme="primary" size="small" icon="{{mode === 'voice' ? 'sound' : 'swap'}}" shape="circle" aria-label="声音" bindtap="changeMode" />
+    </view>
+    <view class="center" wx:if="{{mode === 'voice'}}">
+        <input type="text" class="input" confirm-type="send" value="{{inputValue}}"/>
+    </view>
+    <view class="right" wx:if="{{mode === 'voice'}}">
+        <t-button theme="primary" size="small" icon="arrow-up" shape="circle" aria-label="确认" type="submit" bindtap="confirm"></t-button>
+    </view>
+    <view class="long-press" wx:if="{{mode !== 'voice'}}">
+        <t-button size="large" variant="outline" block icon="{{isPressing ? 'stop' : 'caret-right'}}" loadding="{{loadding}}" bindlongpress='longPressed' longpress-duration="200" bindtouchstart="onTouchStart" bindtouchend="onTouchEnd" bindtouchmove="onTouchMoved">{{isPressing ? '松开发送' : '长按说话'}}</t-button>
+    </view>
+</view>

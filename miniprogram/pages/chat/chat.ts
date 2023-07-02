@@ -1,5 +1,6 @@
 // pages/chat/chat.ts
 
+import { _getUserSettingData } from "miniprogram/utils/user-setting"
 import { getUsageCount, VoiceRecordManage } from "../../utils/record-manage"
 
 const textContainerPaddingBottomSize = 20
@@ -34,6 +35,7 @@ Page({
         },
         curveAniComponent: null,
         buttonWaveAniComponent: null,
+        url: ''
     },
 
     /**
@@ -241,7 +243,20 @@ Page({
      * 生命周期函数--监听页面显示
      */
     onShow() {
-
+       console.info(`onShow`)
+       const _this = this;
+        wx.cloud.callFunction({
+            // 云函数名称
+            name: 'getUserSelectPartner',
+            success: function (res) {
+                const result = res.result;
+                console.info(`chat getUserSelectPartner: ${JSON.stringify(result)} image: ${result.image}`)
+                _this.setData({
+                    url: result.image
+                })
+            },
+            fail: console.error
+        })
     },
 
     /**

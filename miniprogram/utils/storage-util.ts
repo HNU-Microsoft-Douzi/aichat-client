@@ -23,8 +23,9 @@ export function getStroage(key: string) {
           return value;
         }
       } catch (e) {
-        console.error(e)
-        return undefined
+        console.error(e);
+        return undefined;
       }
+      return undefined;
 }
 

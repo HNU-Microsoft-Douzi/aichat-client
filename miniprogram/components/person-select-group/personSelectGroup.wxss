@@ -1,0 +1,9 @@
+/* components/person-select-group/personSelectGroup.wxss */
+
+.block {
+    position: relative;
+    box-sizing: border-box;
+    padding: 20px;
+    /* background-color: #fff; */
+    border-radius: 8px;
+  }

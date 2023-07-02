@@ -1,5 +1,4 @@
 // app.ts
-
 App<IAppOption>({
     globalData: {
         openId: null,
@@ -7,13 +6,19 @@ App<IAppOption>({
         inviteCode: null,
         share_table_name: 'user_share',
         user_limit_table_name: 'user_rate_limit',
-        usageCount: 0
+        partner_name: 'partner',
+        user_setting: 'user_setting',
+        usageCount: 0,
+        default_partner_id: '81f60125649eeaf600da8e771e89d3f5',
+        user_setting_data: {},
     },
     onLaunch() {
         const app = this;
         wx.cloud.init({
             env: 'cloud1-4gneo72a0a88fdf3'
           });
+
+        this._initUserSettingData();
         const database = wx.cloud.database();
         this.globalData.db = database;
         wx.cloud.callFunction({
@@ -52,5 +57,19 @@ App<IAppOption>({
             },
             fail: console.error
         })
-    }
+    },
+    _initUserSettingData() {
+        console.info(`_initUserSettingData`)
+        const _this = this;
+        wx.cloud.callFunction({
+            // 云函数名称
+            name: 'getUserSelectPartner',
+            success: function (res) {
+                const result = res.result;
+                console.info(`getUserSelectPartner: ${JSON.stringify(result)}`)
+                _this.globalData.user_setting_data = result;
+            },
+            fail: console.error
+        })
+    },
 })

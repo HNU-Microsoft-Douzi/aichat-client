@@ -9,7 +9,7 @@
         <!-- <t-divider /> -->
         <t-cell title="签到领次数" description="随机获得15-30次" leftIcon="calendar" hover arrow bindtap="clickSignInText"/>
         <t-cell title="激活码兑换" leftIcon="swap" hover arrow bindtap="clickCodeExchange"/>
-        <t-cell title="语音设置" leftIcon="sound" hover arrow bindtap="clickAudioSetting"/>
+        <t-cell title="人物选择" leftIcon="user-talk" hover arrow bindtap="clickRoleChooseSetting"/>
     </view>
 
     <view class="popup {{isExchangePopupVisible ? 'visible popup-animation' : 'hidden'}}" bindtap="hidePopup">
@@ -30,3 +30,5 @@
 </t-popup>
 
 <audio-setting id="audio-setting" />
+
+<person-select-group id="role" style="position: absolute; top: 0;left: 0; width: 100%;"/>

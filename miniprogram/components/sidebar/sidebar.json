@@ -3,11 +3,12 @@
     "usingComponents": {
         "van-popup": "@vant/weapp/popup/index",
         "van-slider": "@vant/weapp/slider/index",
-        "audio-setting": "/components/audio-setting-popup/audio-setting-pop",
+        "audio-setting": "../audio-setting-popup/audio-setting-pop",
         "t-popup": "tdesign-miniprogram/popup/popup",
         "t-image": "tdesign-miniprogram/image/image",
         "t-icon": "tdesign-miniprogram/icon/icon",
         "t-cell": "tdesign-miniprogram/cell/cell",
-        "t-divider": "tdesign-miniprogram/divider/divider"
+        "t-divider": "tdesign-miniprogram/divider/divider",
+        "person-select-group" : "../person-select-group/personSelectGroup"
     }
 }
