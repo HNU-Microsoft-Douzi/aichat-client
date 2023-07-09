@@ -1,7 +1,6 @@
 {
     "component": true,
     "usingComponents": {
-        "mp-loading": "../../miniprogram_npm/weui-miniprogram/loading/loading",
         "t-progress": "../../miniprogram_npm/tdesign-miniprogram/progress/progress",
         "t-loading": "../../miniprogram_npm/tdesign-miniprogram/loading/loading"
     }

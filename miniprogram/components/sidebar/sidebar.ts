@@ -17,6 +17,7 @@ Component({
             newopen: true,//判断侧边栏是否打开-显示
         },
         restUsageNum: 0,
+        crystalNum: 0,
         isExchangePopupVisible: false,
         exchangeCodeInputValue: ''
     },
@@ -25,18 +26,6 @@ Component({
      * 组件的方法列表
      */
     methods: {
-        onLoad() {
-            const that = this;
-            const app = getApp();
-            const db = app.globalData.db;
-            db.collection('user_rate_limit').where({
-                _openid: app.globalData.openId
-            }).get().then(response => {
-                that.setData({
-                    restUsageNum: response.data[0].conversation_remaining_usage_count
-                })
-            });
-        },
         /**
          * 点击灰色遮罩
          */
@@ -140,11 +129,17 @@ Component({
             if (this.data.side.newopen === false) {
                 return
             }
-            getUsageCount().then(num => {
-                this.setData({
-                    restUsageNum: num
+            const that = this;
+            const app = getApp();
+            const db = app.globalData.db;
+            db.collection('user_rate_limit').where({
+                _openid: app.globalData.openId
+            }).get().then(response => {
+                that.setData({
+                    restUsageNum: response.data[0].conversation_remaining_usage_count,
+                    crystalNum: response.data[0].crystal
                 })
-            })
+            });
             this.setData({ 'side.newopen': false, isExchangePopupVisible: false });
         },
 
@@ -214,7 +209,7 @@ Component({
                             }
                         }
                     },
-                    fail: function(error) {
+                    fail: function (error) {
                         console.info(`sidebar ${error}`)
                     }
                 });
@@ -236,7 +231,7 @@ Component({
                 'side.newopen': true
             })
         },
-        clickRoleChooseSetting: function() {
+        clickRoleChooseSetting: function () {
             console.info(`clickRoleChooseSetting`)
             const roleSelector = this.selectComponent('#role');
             roleSelector.show()
@@ -259,6 +254,9 @@ Component({
                 'side.newopen': true,
                 qrCodePopVisible: true
             })
+        },
+        onPartnerChange(event) {
+            this.triggerEvent('partnerChange', { name: event.detail.name });
         }
     }
 })

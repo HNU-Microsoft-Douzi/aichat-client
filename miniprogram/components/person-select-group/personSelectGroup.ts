@@ -13,7 +13,7 @@ Component({
      */
     data: {
         visible: false,
-        selectedPersonId: '81f6012564a16684015484eb0e9af674', // 默认选择莉莉的id
+        selectedPersonName: '莉莉', // 默认选择莉莉的name
         screenWidth: 0,
         personList: [
             // 更多数据...
@@ -40,15 +40,15 @@ Component({
         onPersonSelect: function (event) {
             const personId = event.currentTarget.dataset.id;
             this.setData({
-                selectedPersonId: personId,
+                selectedPersonName: personId,
             });
         },
         onConfirmSelect: function () {
-            if (this.data.selectedPersonId === null) {
+            if (this.data.selectedPersonName === null) {
                 console.log('用户没有选择任何item');
             } else {
-                console.log('用户选择的item的id:', this.data.selectedPersonId);
-                this._updateUserSelectPartnerId(this.data.selectedPersonId);
+                console.log('用户选择的item的id:', this.data.selectedPersonName);
+                this._updateUserSelectPartnerId(this.data.selectedPersonName);
                 this.setData({
                     visible: false
                 })
@@ -67,17 +67,24 @@ Component({
                 visible: true
             })
         },
-        _updateUserSelectPartnerId(id) {
-            const database = getApp().globalData.db;
-                database.collection(getApp().globalData.user_setting).add({
-                    // data 字段表示需新增的 JSON 数据
-                    data: {
-                        create: new Date(),
-                        partner_id: id
-                    }
-                }).then(res => {
-                    console.log(`insert user usage data success`)
-                })
+        _updateUserSelectPartnerId(name) {
+            const _this = this;
+            wx.cloud.callFunction({
+                // 云函数名称
+                name: 'updateUserSetting',
+                data: {
+                    partner_name: name
+                },
+                success: function (res) {
+                    _this.setData({
+                        selectedPersonName: name
+                    })
+                    // 重置app.ts中的全局变量
+                    getApp().initUserSettingData();
+                    _this.triggerEvent('partnerChange', { name: _this.data.selectedPersonName });
+                },
+                fail: console.error
+            });
         },
         _updatePartnerList() {
             const _this = this;
@@ -90,7 +97,7 @@ Component({
                     partnerList.push({
                         id: item._id,
                         name: item.name,
-                        image: `https://www.yubanstar.top/pic?filename=${item.url}`,
+                        image: `https://www.yubanstar.top/pic?filename=${item.image}`,
                         language: item.language,
                         speed: item.speed,
                         text_style: item.text_style,
@@ -98,7 +105,7 @@ Component({
                         voice_style: item.voice_style,
                         prompt: item.prompt,
                         short_description: item.short_description,
-                        long_description: item.long_description
+                        full_description: item.full_description
                     })
                 });
                 _this.setData({

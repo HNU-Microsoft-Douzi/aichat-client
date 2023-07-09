@@ -1,6 +1,6 @@
 // pages/chat/chat.ts
 
-import { _getUserSettingData } from "miniprogram/utils/user-setting"
+import { resetSessionId } from "../../utils/session-manager"
 import { getUsageCount, VoiceRecordManage } from "../../utils/record-manage"
 
 const textContainerPaddingBottomSize = 20
@@ -28,7 +28,8 @@ Page({
             radius: 0
         },
         url: '',
-        userNewSentence: ''
+        userNewSentence: '',
+        loading: false
     },
 
     onTouchStart() {
@@ -52,6 +53,9 @@ Page({
                 page.showAiTextView()
                 const inputComponent = page.selectComponent('.voice-input');
                 inputComponent.setLoadingState(false);
+                page.setData({
+                    loading: false
+                });
             },
             onStart() {
                 log.info(`record start`)
@@ -67,20 +71,23 @@ Page({
                 inputComponent.setLoadingState(false);
                 page.setSentences(['抱歉，你的网络好像不太好'], [""])
                 page.showAiTextView();
+                page.setData({
+                    loading: false
+                });
             },
             onStartDownload() {
                 const inputComponent = page.selectComponent('.voice-input');
                 inputComponent.setLoadingState(true);
             },
             onGetWholeTextArray(sentences: [string], urls: [string], userText: string) {
-                log.info("sentences:" + sentences)
+                log.info(`sentences: ${sentences} userText: ${userText}`)
                 const inputComponent = page.selectComponent('.voice-input');
                 inputComponent.setLoadingState(false);
-                log.info(sentences)
                 page.setSentences(sentences, urls)
                 page.showAiTextView()
                 page.setData({
-                    userNewSentence: userText
+                    userNewSentence: userText,
+                    loading: false
                 })
             },
             onTraverseIndex(index: number) {
@@ -96,22 +103,46 @@ Page({
         }))
         this.data.voiceRecorder = vR;
         vR.authJudge()
+         // 在页面 onLoad 时调用 wx.showShareMenu() 方法来显示分享菜单
+         wx.showShareMenu({
+            withShareTicket: true // 是否使用带 shareTicket 的转发
+          });
     },
 
     /**
      * 生命周期函数--监听页面初次渲染完成
      */
     onReady() {
+        this.launchFirstCall(500);
+    },
+
+    launchFirstCall(delay: number) {
+        const _this = this;
         getUsageCount().then(userUsageCount => {
             getApp().globalData.usageCount = userUsageCount
+            if (userUsageCount > 0) {
+                _this.sendTextToService();
+            };
         })
-        const _this = this;
-        setTimeout(() => {
-            const vR: VoiceRecordManage = _this.data.voiceRecorder;
-            if (vR) {
-                vR.sendUserTextToService('');
-            }
-        }, 1000);
+    },
+
+    sendTextToService() {
+        const vR: VoiceRecordManage = this.data.voiceRecorder;
+        if (vR) {
+            wx.cloud.callFunction({
+                // 云函数名称
+                name: 'getUserChatParams',
+                success: function (res) {
+                    const result = res.result;
+                    if (result) {
+                        vR.sendTextToService(result.openid, result.language, 1, result.speed, result.vcn, result.prompt, result.text_style, result.voice_style, '');
+                    } else {
+                        console.error(`getUserChatParams get result nothing`);
+                    }
+                },
+                fail: console.error
+            })
+        }
     },
 
     /**
@@ -119,6 +150,10 @@ Page({
      */
     onShow() {
         console.info(`onShow`)
+        this.updateImage();
+    },
+
+    updateImage() {
         const _this = this;
         wx.cloud.callFunction({
             // 云函数名称
@@ -139,7 +174,7 @@ Page({
         wx.vibrateShort({ type: "medium" })
         // this.data.startPoint = e.touches[0]; // 记录长按时开始点信息，后面用于计算上划取消时手指滑动的距离。
         const vR: VoiceRecordManage = this.data.voiceRecorder;
-        vR.stopAudioPlay()
+        vR.stopAudioPlay();
         vR.startRecord();
     },
 
@@ -151,7 +186,8 @@ Page({
             vR.sendUserTextToService(userNewSentence);
         }
         this.setData({
-            userNewSentence: userNewSentence
+            userNewSentence: userNewSentence,
+            loading: true
         })
     },
 
@@ -230,5 +266,43 @@ Page({
     reverseAiTextViewShowState() {
         const textGroup = this.selectComponent('#ai-text-group');
         textGroup.reverseAiTextViewShowState()
-    }
+    },
+    onPartnerChange(event) {
+        console.info(`onPartnerChange ${event.detail.name}`);
+        this.updateImage();
+        resetSessionId();
+        this.hideAiTextView();
+        this.setData({
+            inputValue: '',
+            userNewSentence: ''
+        })
+        // 更新历史记录
+        const vR: VoiceRecordManage = this.data.voiceRecorder;
+        if (vR) {
+            vR.setTalkHistory();
+            vR.stopAudioPlay();
+        }
+        const inputComponent = this.selectComponent('.voice-input');
+        inputComponent.setLoadingState(true);
+        // TODO, 假设这个时候用户刚打开小程序，第一次调用还没回来，那么这个时候需要将第一次调用关掉，然后重启一次新的调用
+        this.launchFirstCall(1000);
+    },  
+    onShareAppMessage: function (options) {
+        // 获取当前用户的 openid
+        const openid = getApp().globalData.openId
+        // 构建分享的数据对象
+        const shareData = {
+          title: '万象虚拟派',
+          path: '/pages/chat/chat?openid=' + openid
+        }
+        // 返回分享的数据对象
+        return shareData
+      },
+      onShareTimeline: function () {
+        const shareData = {
+          title: '万象虚拟派',
+          imageUrl: 'https://example.com/share-timeline-image.jpg',
+        }
+        return shareData
+      }
 })

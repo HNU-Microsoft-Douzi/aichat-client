@@ -15,11 +15,11 @@
 <t-popup visible="{{visible}}" bind:visible-change="onVisibleChange" placement="center">
     <view class="block" style="width: {{screenWidth}}px;max-height: 520px;overflow-y: auto;">
         <view class="person-select-group" style="display:flex;justify-content:space-around;margin-top: 5px;flex-wrap: wrap;">
-            <view class="item" style="flex:1;text-align:center;padding: 2px;{{selectedPersonId === item.id ? 'border: 2px solid #366ef4;border-radius: 8px;' : 'border: 2px solid transparent;'}}" wx:for="{{personList}}" wx:key="id" data-id="{{item.id}}" bindtap="onPersonSelect">
+            <view class="item" style="flex:1;text-align:center;padding: 2px;{{selectedPersonName === item.name ? 'border: 2px solid #366ef4;border-radius: 8px;' : 'border: 2px solid transparent;'}}" wx:for="{{personList}}" wx:key="id" data-id="{{item.name}}" bindtap="onPersonSelect">
                 <view style="display: flex;">
                     <view class="col" style="display:flex;flex-direction:column;">
-                        <t-image src="{{item.image}}" width="139px" height="204px" shape="round" aria-label="一个放置在墙角的黄色行李箱" style="align-self:center;margin-top: 10px;" />
-                        <view class="text" style="align-self:center;margin-top: 5px;{{selectedPersonId === item.id ? 'color: #366ef4;' : ''}}">{{item.name}}</view>
+                        <t-image src="{{item.image}}" width="139px" height="220px" shape="round" style="align-self:center;margin-top: 10px;" mode="aspectFit"/>
+                        <view class="text" style="align-self:center;margin-top: 5px;{{selectedPersonName === item.name ? 'color: #366ef4;' : ''}}">{{item.name}}</view>
                     </view>
                     <view style="display: flex; align-items: center; margin-left: 10px;">
                         <text style="max-height: 200px; overflow: hidden; max-width: 140px;overflow-y: auto; font-size: 15px;color: rgba(0, 0, 0, 0.726);">{{item.short_description}}</text>

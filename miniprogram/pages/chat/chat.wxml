@@ -2,15 +2,17 @@
 <!-- 注意，这里建议按照小程序的规范给出4个不同的层级出来 -->
 <view class="above-container">
     <text-group class="ai-content" id="ai-text-group"></text-group>
-    <image class="ai-image" style="min-height: 560px;" mode="widthFix" src="{{url}}" bindtap="aiImageViewClickEvent"></image>
-    <view class='menu-button' hover-class="menu-button-active" bindtap="clickMenuButton">
-        <image src="https://www.yubanstar.top/pic?filename=setting.png" style="width: 32px; height: 32px;"/>
+    <t-image src="{{url}}" mode="aspectFill" width="100%" height="580px" shape="round" bindtap="aiImageViewClickEvent" >
+        <t-loading slot="loading" theme="circular" size="40rpx" loading />
+    </t-image>
+    
+    <view class='menu-button'>
+        <t-button theme="light" size="medium" icon="setting" shape="circle" bindtap="clickMenuButton" />
     </view>
 </view>
 
 <text class="user-text" wx:if="{{userNewSentence !== ''}}">{{userNewSentence}}</text>
+<t-loading slot="loading" theme="circular" size="40rpx" loading style="position: absolute; right: 30rpx;bottom: 180rpx; z-index: 5;" wx:if="{{loading}}"/>
 <voice-input class="voice-input" bind:longPressed="onLongPressed" bind:confirm="onConfirm" bind:onTouchEnd="onTouchEnd"/>
 
-<sidebar id="menu-bar"/>
-
-<!-- <grammer-tree-group></grammer-tree-group> -->
+<sidebar id="menu-bar" bind:partnerChange="onPartnerChange"/>

@@ -25,22 +25,16 @@ page {
 }
 
 .menu-button {
-    width: 42px;
-    height: 42px;
     position: absolute;
-    background-color: rgba(255, 255, 255, 0.2);
-    border-radius: 90px;
     top: 7%;
     left: 5%;
-    align-items: center;
-    justify-content: center;
-    display: flex;
 }
 
 .menu-button-active {
     /* 例如，改变背景颜色 */
     background-color: rgba(255, 255, 255, 0.7);
   }
+
 
 .ai-image {
     width: 100%;

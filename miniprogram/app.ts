@@ -9,16 +9,16 @@ App<IAppOption>({
         partner_name: 'partner',
         user_setting: 'user_setting',
         usageCount: 0,
-        default_partner_id: '81f6012564a16684015484eb0e9af674',
         user_setting_data: {},
     },
-    onLaunch() {
+    onLaunch(options) {
+        console.log('App Launch', options)
         const app = this;
         wx.cloud.init({
             env: 'cloud1-4gneo72a0a88fdf3'
-          });
+        });
 
-        this._initUserSettingData();
+        this.initUserSettingData();
         const database = wx.cloud.database();
         this.globalData.db = database;
         wx.cloud.callFunction({
@@ -56,10 +56,34 @@ App<IAppOption>({
                 }
             },
             fail: console.error
-        })
+        });
+        // 获取分享来源信息
+        if (options.query && options.query.openid) {
+            // 判断是否通过分享进入小程序，即是否包含 openid 参数
+            console.log('通过分享进入小程序')
+            // 将 openid 存储到全局数据的 userInfo 对象中
+            const userInfo = {
+                openid: options.query.openid
+            }            
+            getApp().globalData.userInfo = userInfo
+            wx.cloud.callFunction({
+                // 云函数名称
+                name: 'updateUserShareReward',
+                data: {
+                    shared_openid: options.query.openid
+                },
+                success: function (res) {
+                    const result = res.result;
+                    console.info(`updateUserShareReward: ${JSON.stringify(result)}`)
+                },
+                fail: console.error
+            })
+        } else {
+            console.log('通过搜索等方式进入小程序')
+        }
     },
-    _initUserSettingData() {
-        console.info(`_initUserSettingData`)
+    initUserSettingData() {
+        console.info(`initUserSettingData`)
         const _this = this;
         wx.cloud.callFunction({
             // 云函数名称

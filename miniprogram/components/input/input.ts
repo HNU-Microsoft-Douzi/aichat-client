@@ -1,7 +1,7 @@
 Component({
     properties: {},
     data: {
-        mode: 'text',
+        mode: 'voice',
         isPressing: false,
         loading: false,
         inputValue: '',
@@ -9,20 +9,23 @@ Component({
             maxHeight: 80,
             minHeight: 20,
           },
+          bottomHeight: 0
     },
     methods: {
         onLineChange(e) {
             console.log('lineCount: ', e.detail);
           },
         changeMode() {
+            wx.vibrateShort({ type: "medium" })
             if (this.data.mode === 'voice') {
                 this.setData({
-                    mode: 'text'
-                })
+                    mode: 'text',
+                    bottomHeight: 0
+                });
             } else if (this.data.mode === 'text') {
                 this.setData({
                     mode: 'voice'
-                })
+                });
             }
         },
         setLoadingState(loading: boolean) {
@@ -57,10 +60,24 @@ Component({
             if (this.data.inputValue === '') {
                 return;
             }
+            wx.vibrateShort({ type: "medium" })
             this.triggerEvent('confirm', { inputValue: this.data.inputValue }, {})
             this.setData({
                 inputValue: ''
             });
+        },
+        inputFocus(e) {
+            const height = e.detail.height;
+            if(height) {
+                this.setData({
+                    bottomHeight: height
+                })
+            }
+        },
+        changeInputBlur(e) {
+            this.setData({
+                bottomHeight: 0
+            })
         }
     }
 });

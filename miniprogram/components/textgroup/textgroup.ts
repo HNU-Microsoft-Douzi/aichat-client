@@ -101,6 +101,7 @@ Component({
             })
         },
         reverseAiTextViewShowState: function () {
+            console.info(`reverseAiTextViewShowState: ${this.data.sentences}`)
             if (this.data.sentences.length !== 0) {
                 this.setData({
                     showTextGroup: !this.data.showTextGroup

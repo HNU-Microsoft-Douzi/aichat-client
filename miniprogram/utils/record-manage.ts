@@ -163,23 +163,23 @@ export class VoiceRecordManage {
         });
     }
 
-    public sendUserTextToService(text: string) {
+    public sendTextToService(openId, language, mode, speed, vcn, prompt, style, emotion,  userNewSentence: string) {
+        console.info(`sendTextToService:`);
         const _this = this;
         wx.request({
             url: 'https://www.yubanstar.top/chat',
             method: 'POST',
             data: {
-                openId: getApp().globalData.openId,
-                origin: getLanguage(),
-                personName: getVcn(),
-                mode: getMode(),
-                speed: getSpeed(),
-                vcn: getVcn(),
-                prompt: getPrompt(),
-                style: getStyle(),
-                emotion: getEmotion(),
+                openId: openId,
+                origin: language,
+                mode: mode,
+                speed: speed,
+                vcn: vcn,
+                prompt: prompt,
+                style: style,
+                emotion: emotion,
                 talkHistory: talkHistory,
-                userNewSentence: text
+                userNewSentence: userNewSentence
             },
             success(res) {
                 _this.handleServerSuccessCallback(res);
@@ -188,6 +188,11 @@ export class VoiceRecordManage {
                 _this.handleServerFailCallback(err);
             }
         })
+    }
+
+    public sendUserTextToService(text: string) {
+        console.info(`sendUserTextToService: ${text}`);
+        this.sendTextToService(getApp().globalData.openId, getLanguage(), getMode(), getSpeed(), getVcn(), getPrompt(), getStyle(), getEmotion(), text);
     }
 
     /**
@@ -214,7 +219,7 @@ export class VoiceRecordManage {
                 talkHistory: talkHistory
             },
             name: 'file',
-            timeout: 30000,
+            timeout: 5000,
             success(res) {
                 _this.handleServerSuccessCallback(res);
             },
@@ -277,11 +282,11 @@ export class VoiceRecordManage {
     }
 
     setTalkHistory() {
+        console.info(`setTalkHistory`);
         wx.cloud.callFunction({
             // 云函数名称
             name: 'getUserTalkHistory',
             data: {
-                partnerName: getApp().globalData.user_setting_data.name,
                 sessionId: getSessionId()
             },
             success: function (res) {
@@ -437,17 +442,19 @@ export function playAudio(filename: string, text: string, callback: TtsPlayCallb
 }
 
 export async function getUsageCount() {
-    const app = getApp();
-    const db = app.globalData.db;
-    const response = await db.collection('user_rate_limit').where({
-        _openid: app.globalData.openId
-    }).get();
-    if (response && response.data && response.data.length > 0 && response.data[0]) {
-        return response.data[0].conversation_remaining_usage_count;
-    } else {
-        return 0;
+    try {
+      const res = await wx.cloud.callFunction({
+        name: 'getUserRemainCount'
+      });
+      console.info(`recordLogic res: ${JSON.stringify(res)}`);
+      if (res && res.result) {
+        const currentUsageCount = res.result.currentUsageCount;
+        return currentUsageCount;
+      }
+    } catch (err) {
+      console.error(`recordLogic err: ${err}`);
     }
-}
+  }
 
 
 interface VoiceRecordManageCallback {

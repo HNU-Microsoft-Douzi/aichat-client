@@ -8,7 +8,9 @@
     "sidebar" : "/components/sidebar/sidebar",
     "grammer-tree-group" : "/components/grammer-tree-group/grammerTreeGroup",
     "voice-input": "../../components/input/input",
-    "t-loading": "../../miniprogram_npm/tdesign-miniprogram/loading/loading"
+    "t-loading": "../../miniprogram_npm/tdesign-miniprogram/loading/loading",
+    "t-image": "../../miniprogram_npm/tdesign-miniprogram/image/image",
+    "t-button": "../../miniprogram_npm/tdesign-miniprogram/button/button"
   },
   
   "disableScroll": true,

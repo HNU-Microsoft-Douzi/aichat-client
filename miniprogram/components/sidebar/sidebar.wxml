@@ -2,14 +2,18 @@
 <view class="page">
     <view class="overlay {{side.newopen?'hidden':''}}" bindtap="clickGreyMask"></view>
     <view class="content {{side.newopen?'':'state'}}">
-        <t-cell leftIcon="notification" hover style="padding-top: 60px;">
-            <view slot="title"><text>剩余使用次数: </text><text style="background-color: rgba(36, 119, 249, 1); border-radius: 5px;padding-left: 6px; padding-right: 6px; padding-top: 3px; padding-bottom: 3px; color: white; margin-right: 5px;">{{restUsageNum}}</text><text>次</text></view>
+        <t-cell leftIcon="logo-codepen" hover style="padding-top: 60px;"  description="分享得 30 万象晶~">
+            <view slot="title"><text>万象晶: </text><text style="background-color: rgb(255, 60, 0); border-radius: 5px;padding-left: 6px; padding-right: 6px; padding-top: 3px; padding-bottom: 3px; color: white; margin-right: 5px;">{{crystalNum}}</text><text>个</text></view>
         </t-cell>
-        <t-cell title="加入讨论小组" leftIcon="qrcode" hover arrow bindtap="clickQrCode"/>
+        <t-cell leftIcon="logo-codepen" hover description="能量用于对话喔">
+            <view slot="title"><text>万象能量: </text><text style="background-color: rgba(36, 119, 249, 1); border-radius: 5px;padding-left: 6px; padding-right: 6px; padding-top: 3px; padding-bottom: 3px; color: white; margin-right: 5px;">{{restUsageNum}}</text><text>个</text></view>
+        </t-cell>
+        <!-- <t-cell title="加入讨论小组" leftIcon="qrcode" hover arrow bindtap="clickQrCode"/> -->
         <!-- <t-divider /> -->
-        <t-cell title="签到领次数" description="随机获得15-30次" leftIcon="calendar" hover arrow bindtap="clickSignInText"/>
-        <t-cell title="激活码兑换" leftIcon="swap" hover arrow bindtap="clickCodeExchange"/>
-        <t-cell title="人物选择" leftIcon="user-talk" hover arrow bindtap="clickRoleChooseSetting"/>
+        <t-cell title="万象分享" leftIcon="share" hover description="点击右上角三点分享喔" />
+        <t-cell title="签到领能量" description="完全随机" leftIcon="calendar" hover arrow bindtap="clickSignInText"/>
+        <t-cell title="万象兑换" leftIcon="swap" hover arrow bindtap="clickCodeExchange" description="请找到神秘的开发者~"/>
+        <t-cell title="万象虚拟人" leftIcon="user-talk" hover arrow bindtap="clickRoleChooseSetting" description="和他们聊聊叭"/>
     </view>
 
     <view class="popup {{isExchangePopupVisible ? 'visible popup-animation' : 'hidden'}}" bindtap="hidePopup">
@@ -29,6 +33,4 @@
     </view>
 </t-popup>
 
-<audio-setting id="audio-setting" />
-
-<person-select-group id="role" style="position: absolute; top: 0;left: 0; width: 100%;"/>
+<person-select-group id="role" style="position: absolute; top: 0;left: 0; width: 100%;" bind:partnerChange="onPartnerChange"/>
