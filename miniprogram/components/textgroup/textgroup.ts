@@ -101,18 +101,27 @@ Component({
             })
         },
         reverseAiTextViewShowState: function () {
-            console.info(`reverseAiTextViewShowState: ${this.data.sentences}`)
-            if (this.data.sentences.length !== 0) {
+            console.info(`reverseAiTextViewShowState: ${this.data.sentences} ${this.data.translation}`)
+            if (this.data.sentences.length !== 0 && this.data.translation !== "") { // 两个都有内容
                 this.setData({
-                    showTextGroup: !this.data.showTextGroup
+                    showTextGroup: !this.data.showTextGroup,
+                    showTranslateView: !this.data.showTextGroup
                 })
-                if (this.data.translation !== "") {
-                    this.setData({
-                        showTranslateView: !this.data.showTranslateView
-                    })
-                }
-            } else {
-                this.hide()
+            } else if (this.data.sentences.length === 0 && this.data.translation === "") { // 两个都没有内容
+                this.setData({
+                    showTextGroup: false,
+                    showTranslateView: false
+                })
+            } else if (this.data.sentences.length !== 0 && this.data.translation === "") { // 一个有，一个没有
+                this.setData({
+                    showTextGroup: !this.data.showTextGroup,
+                    showTranslateView: false
+                })
+            } else if (this.data.sentences.length === 0 && this.data.translation !== "") {
+                this.setData({
+                    showTextGroup: false,
+                    showTranslateView: false
+                })
             }
         }
     }

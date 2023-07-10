@@ -219,7 +219,7 @@ export class VoiceRecordManage {
                 talkHistory: talkHistory
             },
             name: 'file',
-            timeout: 5000,
+            timeout: 20000,
             success(res) {
                 _this.handleServerSuccessCallback(res);
             },
