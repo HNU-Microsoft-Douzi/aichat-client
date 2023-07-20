@@ -163,7 +163,7 @@ export class VoiceRecordManage {
         });
     }
 
-    public sendTextToService(openId, language, mode, speed, vcn, prompt, style, emotion,  userNewSentence: string) {
+    public sendTextToService(openId, language, mode, speed, vcn, prompt, style, emotion, userNewSentence: string) {
         console.info(`sendTextToService:`);
         const _this = this;
         wx.request({
@@ -352,47 +352,37 @@ export class VoiceRecordManage {
         const that = this;
         ttsCallback.startDownloadTtsSentence()
         log.info(`fileUrl: ${fileUrl}`)
-        wx.request({
-            url: fileUrl,
-            responseType: 'arraybuffer',
-            success: res => {
-                ttsCallback.endDownloadTtsSentence()
-                // 开始播放前，先将其它的所有音频全部停掉
-                for (var item of that.innerAudioContextList) {
-                    item.stop()
-                }
-                if (startTap) {
-                    // 开始点击了，这个时候就不要进行播报了
-                    console.info(`user taped, return`)
-                    return
-                }
-                const filePath = `${wx.env.USER_DATA_PATH}/${array[currentIndex].file}`;
-                wx.getFileSystemManager().writeFileSync(filePath, res.data, 'binary');
-                const audio = wx.createInnerAudioContext();
-                that.innerAudioContextList.push(audio);
-                audio.src = filePath;
-                log.info(`voice download address: ${filePath}`)
-                audio.onPlay(() => {
-                    log.info("audio 开始播放")
-                })
-                audio.onStop(() => {
-                    log.info("audio 停止播报")
-                })
-                audio.onError((res) => {
-                    log.info("audio 播放异常:" + res.errMsg)
-                })
-                audio.onEnded((listener) => {
-                    log.info("audio 播放完成")
-                    audio.destroy(); // 销毁当前音频
-                    this.playNext(currentIndex + 1, array, ttsCallback);
-                });
-                ttsCallback.onTraverseIndex(currentIndex)
-                audio.play();
-            },
-            fail: err => {
-                log.error(err);
+        const audio = wx.createInnerAudioContext();
+        audio.src = fileUrl;
+        audio.onPlay(() => {
+            log.info("audio 开始播放")
+            ttsCallback.endDownloadTtsSentence()
+            // 开始播放前，先将其它的所有音频全部停掉
+            for (var item of that.innerAudioContextList) {
+                item.stop()
             }
+            if (startTap) {
+                // 开始点击了，这个时候就不要进行播报了
+                console.info(`user taped, return`)
+                audio.stop(); // 要停下来
+                return
+            }
+            that.innerAudioContextList.push(audio);
+            ttsCallback.onTraverseIndex(currentIndex)
+        })
+        audio.onStop(() => {
+            log.info("audio 停止播报")
+        })
+        audio.onError((res) => {
+            log.info("audio 播放异常:" + res.errMsg)
+        })
+        audio.onEnded((listener) => {
+            log.info("audio 播放完成")
+            audio.destroy(); // 销毁当前音频
+            this.playNext(currentIndex + 1, array, ttsCallback);
         });
+
+        audio.play();
     }
 }
 
@@ -455,18 +445,18 @@ export function playAudio(filename: string, text: string, callback: TtsPlayCallb
 
 export async function getUsageCount() {
     try {
-      const res = await wx.cloud.callFunction({
-        name: 'getUserRemainCount'
-      });
-      console.info(`recordLogic res: ${JSON.stringify(res)}`);
-      if (res && res.result) {
-        const currentUsageCount = res.result.currentUsageCount;
-        return currentUsageCount;
-      }
+        const res = await wx.cloud.callFunction({
+            name: 'getUserRemainCount'
+        });
+        console.info(`recordLogic res: ${JSON.stringify(res)}`);
+        if (res && res.result) {
+            const currentUsageCount = res.result.currentUsageCount;
+            return currentUsageCount;
+        }
     } catch (err) {
-      console.error(`recordLogic err: ${err}`);
+        console.error(`recordLogic err: ${err}`);
     }
-  }
+}
 
 
 interface VoiceRecordManageCallback {
