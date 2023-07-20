@@ -56,3 +56,11 @@ export function getEmotion() {
     }
     return emotion;
 }
+
+export function getEmphaticSentence() {
+    let emphaticSentence = '嘿嘿';
+    if (getApp().globalData.user_setting_data.voice_style) {
+        emphaticSentence = getApp().globalData.user_setting_data.emphatic_sentence;
+    }
+    return emphaticSentence;
+}

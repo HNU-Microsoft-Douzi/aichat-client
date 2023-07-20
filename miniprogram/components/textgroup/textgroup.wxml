@@ -2,7 +2,7 @@
 <t-progress percentage="{{percentage}}" ariaLabel="{{ percentage + '%' }}" wx:if="{{showProgess}}"/>
 <view class="text-group" hidden="{{!showTextGroup}}" style="margin-top: {{marginTop}};">
     <block wx:for="{{sentences}}" wx:key="index">
-        <text class="text-item {{current_index === index?'highlight':' '}}" data-index="{{index}}" bindtap="onTap">{{item}}</text>
+        <text class="text-item {{current_index === index?'highlight':' '}}" data-index="{{index}}" bindtap="onTap" selectable>{{item}}</text>
     </block>
 </view>
 <view class="translate-view" wx:if="{{showTranslateView}}">

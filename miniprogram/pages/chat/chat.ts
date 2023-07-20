@@ -79,9 +79,12 @@ Page({
                 const inputComponent = page.selectComponent('.voice-input');
                 inputComponent.setLoadingState(true);
             },
-            onGetWholeTextArray(sentences: [string], urls: [string], userText: string) {
+            onGetWholeTextArray(sentences: [string], urls: [string], userText: string, action: string, emotion: string, likeability) {
                 log.info(`sentences: ${sentences} userText: ${userText}`)
                 const inputComponent = page.selectComponent('.voice-input');
+                if (action && emotion) {
+                    sentences[0] = `(${action})(${emotion})` + sentences[0];
+                }
                 inputComponent.setLoadingState(false);
                 page.setSentences(sentences, urls)
                 page.showAiTextView()

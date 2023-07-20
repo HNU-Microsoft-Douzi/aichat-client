@@ -1,5 +1,5 @@
 import { getSessionId } from "./session-manager";
-import { getLanguage, getVcn, getMode, getSpeed, getPrompt, getStyle, getEmotion } from "./tts-storage-util"
+import { getLanguage, getVcn, getMode, getSpeed, getPrompt, getStyle, getEmotion, getEmphaticSentence } from "./tts-storage-util"
 var log = require('./log.js')
 
 var startTap = false;
@@ -179,7 +179,8 @@ export class VoiceRecordManage {
                 style: style,
                 emotion: emotion,
                 talkHistory: talkHistory,
-                userNewSentence: userNewSentence
+                userNewSentence: userNewSentence,
+                emphaticSentence: getEmphaticSentence()
             },
             success(res) {
                 _this.handleServerSuccessCallback(res);
@@ -216,7 +217,8 @@ export class VoiceRecordManage {
                 prompt: getPrompt(),
                 style: getStyle(),
                 emotion: getEmotion(),
-                talkHistory: talkHistory
+                talkHistory: talkHistory,
+                emphaticSentence: getEmphaticSentence()
             },
             name: 'file',
             timeout: 20000,
@@ -244,7 +246,10 @@ export class VoiceRecordManage {
         startTap = false;
         const user = data.user;
         const result = data.result;
-        log.info(`user: ${user} result:` + JSON.stringify(result));
+        const action = data.action; // 动作描写，可能为undefined
+        const emotion = data.emotion; // 情绪描写，可能为undefined
+        const likeability = data.likeability; // 好感度，可能为undefined
+        console.info(`user: ${user} action: ${action} emotion: ${emotion} likeability: ${likeability} result:` + JSON.stringify(result));
         let textArray: Array<string> = [];
         let urlArray: Array<string> = [];
         let serverResponseText = '';
@@ -256,7 +261,14 @@ export class VoiceRecordManage {
             urlArray.push(fileUrl);
             log.info(`fileUrl: ${fileUrl}  responseText: ${responseText}`);
         });
-        this.reportData(user, serverResponseText);
+        const resJson = {
+            'action': action,
+            'mood': emotion,
+            'speech': serverResponseText,
+            'favorability': likeability
+        }
+        console.info(`reportData: ${JSON.stringify(resJson)}`)
+        this.reportData(user, JSON.stringify(resJson));
         const db = getApp().globalData.db;
         const _ = db.command;
         db.collection('user_rate_limit').where({
@@ -270,7 +282,7 @@ export class VoiceRecordManage {
                 log.info(`用户使用次数-1`)
             }
         })
-        this.callback.onGetWholeTextArray(textArray, urlArray, user)
+        this.callback.onGetWholeTextArray(textArray, urlArray, user, action, emotion, likeability)
         // TODO, 这里应该封装成一个完整的函数放在chat.js中控制，并由chat.js在调用这个接口前开始展示loadding进度条，在播放完毕后隐藏进度条
         // 或者可以在ttsCallback增加一个针对单个句子开始下载、下载完毕的回调通知，全部都放在callback里实现
         this.playNext(0, result, this.callback);
@@ -357,7 +369,7 @@ export class VoiceRecordManage {
                 const filePath = `${wx.env.USER_DATA_PATH}/${array[currentIndex].file}`;
                 wx.getFileSystemManager().writeFileSync(filePath, res.data, 'binary');
                 const audio = wx.createInnerAudioContext();
-                that.innerAudioContextList.push(audio)
+                that.innerAudioContextList.push(audio);
                 audio.src = filePath;
                 log.info(`voice download address: ${filePath}`)
                 audio.onPlay(() => {
@@ -470,7 +482,7 @@ interface TtsDownloadManageCallback {
         errorMsg: string
     ): void
     onStartDownload(): void
-    onGetWholeTextArray(textArray: Array<string>, textUrl: Array<string>, userText: string): void
+    onGetWholeTextArray(textArray: Array<string>, textUrl: Array<string>, userText: string, action: string, emotion: string, likeability: string): void
     onTraverseIndex(index: number): void,
     startDownloadTtsSentence(): void,
     endDownloadTtsSentence(): void

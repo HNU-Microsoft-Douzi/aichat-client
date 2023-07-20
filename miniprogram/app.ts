@@ -90,7 +90,7 @@ App<IAppOption>({
             name: 'getUserSelectPartner',
             success: function (res) {
                 const result = res.result;
-                console.info(`getUserSelectPartner: ${JSON.stringify(result)}`)
+                // console.info(`getUserSelectPartner: ${JSON.stringify(result)}`)
                 _this.globalData.user_setting_data = result;
             },
             fail: console.error

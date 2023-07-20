@@ -11,7 +11,7 @@
     </view>
 </view>
 
-<text class="user-text" wx:if="{{userNewSentence !== ''}}">{{userNewSentence}}</text>
+<text class="user-text" wx:if="{{userNewSentence !== ''}}" selectable="true">{{userNewSentence}}</text>
 <t-loading slot="loading" theme="circular" size="40rpx" loading style="position: absolute; right: 30rpx;bottom: 180rpx; z-index: 5;" wx:if="{{loading}}"/>
 <voice-input class="voice-input" bind:longPressed="onLongPressed" bind:confirm="onConfirm" bind:onTouchEnd="onTouchEnd"/>
 
